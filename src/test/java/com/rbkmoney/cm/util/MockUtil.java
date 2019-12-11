@@ -1,6 +1,5 @@
 package com.rbkmoney.cm.util;
 
-import com.rbkmoney.cm.model.ClaimModel;
 import com.rbkmoney.geck.serializer.kit.mock.FieldHandler;
 import com.rbkmoney.geck.serializer.kit.mock.MockMode;
 import com.rbkmoney.geck.serializer.kit.mock.MockTBaseProcessor;

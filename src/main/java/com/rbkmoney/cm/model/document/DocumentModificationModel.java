@@ -1,7 +1,6 @@
 package com.rbkmoney.cm.model.document;
 
 import com.rbkmoney.cm.model.ClaimModificationModel;
-import com.rbkmoney.cm.model.file.FileModificationModel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

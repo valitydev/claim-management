@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @Entity
 @Getter

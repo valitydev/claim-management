@@ -25,7 +25,7 @@ public class ClaimToClaimModelConverter implements ClaimConverter<Claim, ClaimMo
         ClaimModel claimModel = new ClaimModel();
         claimModel.setId(claim.getId());
         claimModel.setPartyId(claim.getPartyId());
-        claimModel.setCreatedAt(TypeUtil.stringToLocalDateTime(claim.getCreatedAt()));
+        claimModel.setCreatedAt(TypeUtil.stringToInstant(claim.getCreatedAt()));
         claimModel.setRevision(claim.getRevision());
         claimModel.setClaimStatus(conversionService.convert(claim.getStatus(), ClaimStatusModel.class));
         claimModel.setModifications(
@@ -35,7 +35,7 @@ public class ClaimToClaimModelConverter implements ClaimConverter<Claim, ClaimMo
         );
 
         if (claim.isSetUpdatedAt()) {
-            claimModel.setUpdatedAt(TypeUtil.stringToLocalDateTime(claim.getUpdatedAt()));
+            claimModel.setUpdatedAt(TypeUtil.stringToInstant(claim.getUpdatedAt()));
         }
         if (claim.isSetMetadata()) {
             claimModel.setMetadata(

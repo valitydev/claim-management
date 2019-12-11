@@ -11,9 +11,9 @@ public class LegalAgreementToLegalAgreementModelConverter implements ClaimConver
     public LegalAgreementModel convert(LegalAgreement legalAgreement) {
         LegalAgreementModel legalAgreementModel = new LegalAgreementModel();
         legalAgreementModel.setLegalAgreementId(legalAgreement.getLegalAgreementId());
-        legalAgreementModel.setSignedAt(TypeUtil.stringToLocalDateTime(legalAgreement.getSignedAt()));
+        legalAgreementModel.setSignedAt(TypeUtil.stringToInstant(legalAgreement.getSignedAt()));
         if (legalAgreement.isSetValidUntil()) {
-            legalAgreementModel.setValidUntil(TypeUtil.stringToLocalDateTime(legalAgreement.getValidUntil()));
+            legalAgreementModel.setValidUntil(TypeUtil.stringToInstant(legalAgreement.getValidUntil()));
         }
         return legalAgreementModel;
     }
