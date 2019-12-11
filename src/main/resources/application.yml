@@ -42,6 +42,7 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
         jdbc:
+          time_zone: UTC
           lob:
             non_contextual_creation: true
 #      ddl-auto: create

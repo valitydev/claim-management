@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.cm.exception.InvalidContinuationTokenException;
 import com.rbkmoney.cm.pageable.ClaimPageRequest;
 import org.junit.Test;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;

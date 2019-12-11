@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -19,12 +19,12 @@ public class LegalAgreementModel {
 
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime signedAt;
+    private Instant signedAt;
 
     @NotNull
     @Column(nullable = false)
     private String legalAgreementId;
 
-    private LocalDateTime validUntil;
+    private Instant validUntil;
 
 }

@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Setter
 @Getter
@@ -24,7 +24,7 @@ public class ModificationModel {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)

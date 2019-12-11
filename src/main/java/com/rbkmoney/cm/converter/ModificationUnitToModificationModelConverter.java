@@ -21,7 +21,7 @@ public class ModificationUnitToModificationModelConverter implements ClaimConver
         ModificationModel modificationModel = conversionService.convert(modificationUnit.getModification(), ModificationModel.class);
         UserInfoModel userInfoModel = conversionService.convert(modificationUnit.getUserInfo(), UserInfoModel.class);
         modificationModel.setId(modificationUnit.getModificationId());
-        modificationModel.setCreatedAt(TypeUtil.stringToLocalDateTime(modificationUnit.getCreatedAt()));
+        modificationModel.setCreatedAt(TypeUtil.stringToInstant(modificationUnit.getCreatedAt()));
         modificationModel.setUserInfo(userInfoModel);
         return modificationModel;
     }
