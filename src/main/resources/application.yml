@@ -51,3 +51,15 @@ info:
   version: @project.version@
   stage: dev
 continuation-secret: "Yp3s5v8t/B?E(H+MbQeThWB?E(H+MbQeThW"
+
+kafka:
+  bootstrap.servers: "localhost:29092"
+  topic:
+    claim.event.sink: "claim-event-sink"
+  ssl:
+    enable: false
+    keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12
+    keystore-password: kenny
+    key-password: kenny
+    server-password: kenny12
+    server-keystore-location: src/main/resources/cert/truststore.p12

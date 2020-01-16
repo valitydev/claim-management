@@ -83,8 +83,8 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void acceptClaim(String partyId, long claimId, int revision) {
-        changeStatus(
+    public ClaimModel acceptClaim(String partyId, long claimId, int revision) {
+        return changeStatus(
                 partyId, claimId, revision,
                 new ClaimStatusModel(ClaimStatusEnum.pending_acceptance, null),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
@@ -92,8 +92,8 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void revokeClaim(String partyId, long claimId, int revision, String reason) {
-        changeStatus(
+    public ClaimModel revokeClaim(String partyId, long claimId, int revision, String reason) {
+        return changeStatus(
                 partyId, claimId, revision,
                 new ClaimStatusModel(ClaimStatusEnum.revoked, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
@@ -101,8 +101,8 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void denyClaim(String partyId, long claimId, int revision, String reason) {
-        changeStatus(
+    public ClaimModel denyClaim(String partyId, long claimId, int revision, String reason) {
+        return changeStatus(
                 partyId, claimId, revision,
                 new ClaimStatusModel(ClaimStatusEnum.denied, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
@@ -110,8 +110,8 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void requestClaimReview(String partyId, long claimId, int revision) {
-        changeStatus(
+    public ClaimModel requestClaimReview(String partyId, long claimId, int revision) {
+        return changeStatus(
                 partyId, claimId, revision,
                 new ClaimStatusModel(ClaimStatusEnum.review, null),
                 Arrays.asList(ClaimStatusEnum.pending)
@@ -119,8 +119,8 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void requestClaimChanges(String partyId, long claimId, int revision) {
-        changeStatus(
+    public ClaimModel requestClaimChanges(String partyId, long claimId, int revision) {
+        return changeStatus(
                 partyId, claimId, revision,
                 new ClaimStatusModel(ClaimStatusEnum.pending, null),
                 Arrays.asList(ClaimStatusEnum.review)
@@ -128,12 +128,12 @@ public class ClaimManagementService {
     }
 
     @Transactional
-    public void changeStatus(String partyId, long claimId, int revision, ClaimStatusModel targetClaimStatus, List<ClaimStatusEnum> expectedStatuses) {
+    public ClaimModel changeStatus(String partyId, long claimId, int revision, ClaimStatusModel targetClaimStatus, List<ClaimStatusEnum> expectedStatuses) {
         log.info("Trying to change status in claim, claimId='{}', targetStatus='{}'", claimId, targetClaimStatus);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
         if (claimModel.getClaimStatus().getClaimStatusEnum() == targetClaimStatus.getClaimStatusEnum()) {
             log.info("Claim is already in target status, status='{}'", targetClaimStatus);
-            return;
+            return claimModel;
         }
 
         checkRevision(claimModel, revision);
@@ -147,8 +147,9 @@ public class ClaimManagementService {
         statusModificationModel.setUserInfo(ContextUtil.getUserInfoFromContext());
         claimModel.getModifications().add(statusModificationModel);
 
-        claimRepository.save(claimModel);
         log.info("Status in claim have been changed, claimId='{}', targetStatus='{}'", claimId, targetClaimStatus);
+
+        return claimRepository.save(claimModel);
     }
 
     @Transactional
