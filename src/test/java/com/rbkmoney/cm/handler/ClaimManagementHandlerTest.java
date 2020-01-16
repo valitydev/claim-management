@@ -14,8 +14,14 @@ import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.woody.api.flow.WFlow;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import lombok.SneakyThrows;
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.annotation.Repeat;
 
 import java.net.URI;
@@ -28,11 +34,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
 
 public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
 
     private ClaimManagementSrv.Iface client;
+
+    @MockBean
+    private KafkaTemplate<String, TBase> kafkaTemplate;
 
     @Before
     public void setUp() throws URISyntaxException {
@@ -48,6 +58,9 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
                         )
                 )
                 .build(ClaimManagementSrv.Iface.class);
+
+        Mockito.when(kafkaTemplate.send(any(), any())).thenReturn(new AsyncResult<>(null));
+
     }
 
     @Test
@@ -162,6 +175,20 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
         Value value2 = MockUtil.generateTBase(Value.class);
         runService(() -> client.setMetadata("party_id", claim.getId(), "key", value2));
         assertEquals(value2, callService(() -> client.getMetadata("party_id", claim.getId(), "key")));
+    }
+
+    @Test
+    public void setAndGetMetadataError() throws TException {
+        Claim claim = createClaim("party_id", MockUtil.generateTBaseList(Modification.party_modification(new PartyModification()), 5));
+        assertEquals(claim, callService(() -> client.getClaim("party_id", claim.getId())));
+        runService(() -> client.updateClaim("party_id", claim.getId(), 0, MockUtil.generateTBaseList(Modification.claim_modification(new ClaimModification()), 5)));
+        assertEquals(10, callService(() -> client.getClaim("party_id", claim.getId())).getChangesetSize());
+        try {
+            Mockito.when(kafkaTemplate.send(any(), any())).thenThrow(new RuntimeException());
+            runService(() -> client.updateClaim("party_id", claim.getId(), 0, MockUtil.generateTBaseList(Modification.claim_modification(new ClaimModification()), 5)));
+        } catch (Exception e) {
+            assertEquals(10, callService(() -> client.getClaim("party_id", claim.getId())).getChangesetSize());
+        }
     }
 
     @Test(expected = MetadataKeyNotFound.class)

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 public class AppConfig {
@@ -33,11 +34,13 @@ public class AppConfig {
             ClaimManagementService claimManagementService,
             ConversionService conversionService,
             KafkaTemplate<String, TBase> kafkaTemplate,
-            ClaimEventFactory claimEventFactory
+            ClaimEventFactory claimEventFactory,
+            RetryTemplate retryTemplate
     ) {
         return new ClaimHandlerEventSinkDecorator(
                 new ClaimManagementHandler(claimManagementService, conversionService),
                 kafkaTemplate,
-                claimEventFactory);
+                claimEventFactory,
+                retryTemplate);
     }
 }

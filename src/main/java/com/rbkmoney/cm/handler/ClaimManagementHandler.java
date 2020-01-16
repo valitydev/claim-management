@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.thrift.TException;
 import org.springframework.core.convert.ConversionService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

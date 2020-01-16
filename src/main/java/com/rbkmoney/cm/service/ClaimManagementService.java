@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +30,6 @@ public class ClaimManagementService {
 
     private final ContinuationTokenService continuationTokenService;
 
-    @Transactional
     public ClaimModel createClaim(String partyId, List<ModificationModel> modifications) {
         log.info("Trying to create new claim, partyId='{}', modifications='{}'", partyId, modifications);
 
@@ -44,12 +42,11 @@ public class ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
-        claimModel = claimRepository.save(claimModel);
+        claimModel = claimRepository.saveAndFlush(claimModel);
         log.info("Claim have been created, partyId='{}', claim='{}'", partyId, claimModel);
         return claimModel;
     }
 
-    @Transactional
     public void updateClaim(String partyId, long claimId, int revision, List<ModificationModel> modifications) {
         log.info("Trying to update claim, partyId='{}', claimId='{}', revision='{}', modifications='{}'", partyId, claimId, revision, modifications);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
@@ -60,17 +57,15 @@ public class ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.getModifications().addAll(modifications);
 
-        claimModel = claimRepository.save(claimModel);
+        claimModel = claimRepository.saveAndFlush(claimModel);
         log.info("Claim have been updated, partyId='{}', claim='{}'", partyId, claimModel);
     }
 
-    @Transactional
     public ClaimModel getClaim(String partyId, long claimId) {
         return getClaim(partyId, claimId, true);
     }
 
-    @Transactional
-    public ClaimModel getClaim(String partyId, long claimId, boolean needInitialize) {
+    private ClaimModel getClaim(String partyId, long claimId, boolean needInitialize) {
         ClaimModel claimModel = claimRepository.findOne(
                 where(equalsByPartyIdAndClaimId(partyId, claimId))
         ).orElseThrow(ClaimNotFoundException::new);
@@ -82,7 +77,6 @@ public class ClaimManagementService {
         return claimModel;
     }
 
-    @Transactional
     public ClaimModel acceptClaim(String partyId, long claimId, int revision) {
         return changeStatus(
                 partyId, claimId, revision,
@@ -91,7 +85,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public ClaimModel revokeClaim(String partyId, long claimId, int revision, String reason) {
         return changeStatus(
                 partyId, claimId, revision,
@@ -100,7 +93,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public ClaimModel denyClaim(String partyId, long claimId, int revision, String reason) {
         return changeStatus(
                 partyId, claimId, revision,
@@ -109,7 +101,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public ClaimModel requestClaimReview(String partyId, long claimId, int revision) {
         return changeStatus(
                 partyId, claimId, revision,
@@ -118,7 +109,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public ClaimModel requestClaimChanges(String partyId, long claimId, int revision) {
         return changeStatus(
                 partyId, claimId, revision,
@@ -127,7 +117,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public ClaimModel changeStatus(String partyId, long claimId, int revision, ClaimStatusModel targetClaimStatus, List<ClaimStatusEnum> expectedStatuses) {
         log.info("Trying to change status in claim, claimId='{}', targetStatus='{}'", claimId, targetClaimStatus);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
@@ -152,7 +141,6 @@ public class ClaimManagementService {
         return claimRepository.save(claimModel);
     }
 
-    @Transactional
     public ClaimPageResponse searchClaims(String partyId, Long claimId, List<ClaimStatusEnum> statuses, String continuationToken, int limit) {
         List<Object> parameters = Arrays.asList(partyId, claimId, statuses, limit);
         ClaimPageRequest claimPageRequest = new ClaimPageRequest(0, limit);
@@ -169,7 +157,6 @@ public class ClaimManagementService {
         );
     }
 
-    @Transactional
     public Page<ClaimModel> searchClaims(String partyId, Long claimId, List<ClaimStatusEnum> statuses, ClaimPageRequest claimPageRequest) {
         log.info("Trying to search claims, partyId='{}', statuses='{}', pageRequest='{}'", partyId, statuses, claimPageRequest);
         Page<ClaimModel> claims = claimRepository.findAll(
@@ -181,7 +168,6 @@ public class ClaimManagementService {
         return claims;
     }
 
-    @Transactional
     public MetadataModel getMetadata(String partyId, long claimId, String key) {
         log.info("Trying to get metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
@@ -194,7 +180,6 @@ public class ClaimManagementService {
         return metadataModel;
     }
 
-    @Transactional
     public void setMetadata(String partyId, long claimId, String key, MetadataModel metadataModel) {
         log.info("Trying to change metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
@@ -205,7 +190,6 @@ public class ClaimManagementService {
         log.info("metadata field have been changed, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
     }
 
-    @Transactional
     public void removeMetadata(String partyId, long claimId, String key) {
         log.info("Trying to remove metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
         ClaimModel claimModel = getClaim(partyId, claimId, false);
