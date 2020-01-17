@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.base.InvalidRequest;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.msgpack.Value;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -13,6 +14,7 @@ import org.springframework.retry.support.RetryTemplate;
 import javax.transaction.Transactional;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface {
 
@@ -32,14 +34,16 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public Claim createClaim(String partyId, List<Modification> changeset) throws TException {
         Claim claim = iface.createClaim(partyId, changeset);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, new Event()
-                    .setChange(claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim))
-            );
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim));
 
         return claim;
+    }
+
+    private void sendToEventSinkWithRetry(Event event) {
+        retryTemplate.execute(arg0 -> {
+            kafkaTemplate.send(eventSinkTopic, event);
+            return null;
+        });
     }
 
     @Override
@@ -47,12 +51,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset) throws PartyNotFound, ChangesetConflict, InvalidChangeset, InvalidRequest, TException {
         iface.updateClaim(partyId, claimId, revision, changeset);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, new Event()
-                    .setChange(claimEventFactory.createUpdateClaimEvent(partyId, claimId, revision, changeset))
-            );
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createUpdateClaimEvent(partyId, claimId, revision, changeset));
     }
 
     @Override
@@ -60,10 +59,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void acceptClaim(String partyId, long claimId, int revision) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, ChangesetConflict, InvalidChangeset, TException {
         iface.acceptClaim(partyId, claimId, revision);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.accepted(new ClaimAccepted())));
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.accepted(new ClaimAccepted())));
     }
 
     @Override
@@ -71,10 +67,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void denyClaim(String partyId, long claimId, int revision, String reason) throws TException {
         iface.denyClaim(partyId, claimId, revision, reason);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.denied(new ClaimDenied())));
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.denied(new ClaimDenied())));
     }
 
     @Override
@@ -82,10 +75,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void revokeClaim(String partyId, long claimId, int revision, String reason) throws TException {
         iface.revokeClaim(partyId, claimId, revision, reason);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.revoked(new ClaimRevoked())));
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.revoked(new ClaimRevoked())));
     }
 
     @Override
@@ -93,10 +83,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void requestClaimReview(String partyId, long claimId, int revision) throws TException {
         iface.requestClaimReview(partyId, claimId, revision);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.review(new ClaimReview())));
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.review(new ClaimReview())));
     }
 
     @Override
@@ -104,10 +91,7 @@ public class ClaimHandlerEventSinkDecorator implements ClaimManagementSrv.Iface 
     public void requestClaimChanges(String partyId, long claimId, int revision) throws TException {
         iface.requestClaimChanges(partyId, claimId, revision);
 
-        retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.pending(new ClaimPending())));
-            return null;
-        });
+        sendToEventSinkWithRetry(claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.pending(new ClaimPending())));
     }
 
     @Override

@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 
 public class ClaimHandlerEventSinkDecoratorTest {
 
+    ClaimHandlerEventSinkDecorator claimHandlerEventSinkDecorator;
+
     @Test
     public void createClaim() {
 

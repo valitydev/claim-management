@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public class ClaimEventFactory {
 
-    public Change createCreatedClaimEvent(String partyId, List<Modification> changeset, Claim claim) {
+    public Event createCreatedClaimEvent(String partyId, List<Modification> changeset, Claim claim) {
         Change change = new Change();
         change.setCreated(new ClaimCreated()
                 .setCreatedAt(claim.getCreatedAt())
@@ -17,10 +17,10 @@ public class ClaimEventFactory {
                 .setPartyId(partyId)
                 .setRevision(claim.getRevision())
         );
-        return change;
+        return new Event().setChange(change);
     }
 
-    public Change createUpdateClaimEvent(String partyId, long claimId, int revision, List<Modification> changeset) {
+    public Event createUpdateClaimEvent(String partyId, long claimId, int revision, List<Modification> changeset) {
         Change change = new Change();
         change.setUpdated(new ClaimUpdated()
                 .setId(claimId)
@@ -28,10 +28,10 @@ public class ClaimEventFactory {
                 .setPartyId(partyId)
                 .setRevision(revision)
         );
-        return change;
+        return new Event().setChange(change);
     }
 
-    public Change createChangeStatusEvent(String partyId, long claimId, int revision, ClaimStatus claimStatus) {
+    public Event createChangeStatusEvent(String partyId, long claimId, int revision, ClaimStatus claimStatus) {
         Change change = new Change();
         change.setStatusChanged(new ClaimStatusChanged()
                 .setId(claimId)
@@ -39,7 +39,7 @@ public class ClaimEventFactory {
                 .setRevision(revision)
                 .setStatus(claimStatus)
         );
-        return change;
+        return new Event().setChange(change);
     }
 
 }

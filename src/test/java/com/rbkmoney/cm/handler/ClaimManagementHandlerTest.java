@@ -181,13 +181,12 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
     public void setAndGetMetadataError() throws TException {
         Claim claim = createClaim("party_id", MockUtil.generateTBaseList(Modification.party_modification(new PartyModification()), 5));
         assertEquals(claim, callService(() -> client.getClaim("party_id", claim.getId())));
-        runService(() -> client.updateClaim("party_id", claim.getId(), 0, MockUtil.generateTBaseList(Modification.claim_modification(new ClaimModification()), 5)));
-        assertEquals(10, callService(() -> client.getClaim("party_id", claim.getId())).getChangesetSize());
         try {
             Mockito.when(kafkaTemplate.send(any(), any())).thenThrow(new RuntimeException());
             runService(() -> client.updateClaim("party_id", claim.getId(), 0, MockUtil.generateTBaseList(Modification.claim_modification(new ClaimModification()), 5)));
         } catch (Exception e) {
-            assertEquals(10, callService(() -> client.getClaim("party_id", claim.getId())).getChangesetSize());
+            assertEquals(5, callService(() -> client.getClaim("party_id", claim.getId())).getChangesetSize());
+            Mockito.verify(kafkaTemplate, Mockito.times(4)).send(any(), any());
         }
     }
 
