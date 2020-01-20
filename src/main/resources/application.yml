@@ -63,3 +63,6 @@ kafka:
     key-password: kenny
     server-password: kenny12
     server-keystore-location: src/main/resources/cert/truststore.p12
+event.sink.retry:
+  backoff.period: 1000
+  max.attempts: 3
