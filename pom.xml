@@ -133,7 +133,7 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-            <version>2.2.2.RELEASE</version>
+            <version>2.2.8.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.kafka</groupId>
@@ -146,6 +146,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>2.1.8.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>

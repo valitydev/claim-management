@@ -4,9 +4,8 @@ import com.rbkmoney.cm.exception.*;
 import com.rbkmoney.cm.model.ClaimModel;
 import com.rbkmoney.cm.model.ClaimStatusEnum;
 import com.rbkmoney.cm.model.MetadataModel;
-import com.rbkmoney.cm.model.ModificationModel;
 import com.rbkmoney.cm.pageable.ClaimPageResponse;
-import com.rbkmoney.cm.service.ClaimManagementService;
+import com.rbkmoney.cm.service.ClaimManagementServiceImpl;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.geck.common.util.TBaseUtil;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.thrift.TException;
 import org.springframework.core.convert.ConversionService;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,26 +21,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
 
-    private final ClaimManagementService claimManagementService;
+    private final ClaimManagementServiceImpl claimManagementService;
 
     private final ConversionService conversionService;
 
     @Override
     public Claim createClaim(String partyId, List<Modification> changeset) throws TException {
-        List<ModificationModel> modifications = changeset.stream()
-                .map(change -> conversionService.convert(change, ModificationModel.class))
-                .collect(Collectors.toList());
-        ClaimModel claimModel = claimManagementService.createClaim(partyId, modifications);
-        return conversionService.convert(claimModel, Claim.class);
+        return claimManagementService.createClaim(partyId, changeset);
     }
 
     @Override
     public void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset) throws TException {
-        List<ModificationModel> modifications = changeset.stream()
-                .map(change -> conversionService.convert(change, ModificationModel.class))
-                .collect(Collectors.toList());
         try {
-            claimManagementService.updateClaim(partyId, claimId, revision, modifications);
+            claimManagementService.updateClaim(partyId, claimId, revision, changeset);
         } catch (InvalidClaimStatusException ex) {
             throw new InvalidClaimStatus(conversionService.convert(ex.getClaimStatusModel(), ClaimStatus.class));
         } catch (ClaimNotFoundException ex) {

@@ -1,10 +1,9 @@
 package com.rbkmoney.cm.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rbkmoney.cm.handler.ClaimHandlerEventSinkDecorator;
 import com.rbkmoney.cm.handler.ClaimManagementHandler;
 import com.rbkmoney.cm.repository.ClaimRepository;
-import com.rbkmoney.cm.service.ClaimManagementService;
+import com.rbkmoney.cm.service.ClaimManagementServiceImpl;
 import com.rbkmoney.cm.service.ContinuationTokenService;
 import com.rbkmoney.cm.util.ClaimEventFactory;
 import com.rbkmoney.damsel.claim_management.ClaimManagementSrv;
@@ -25,22 +24,24 @@ public class AppConfig {
     }
 
     @Bean
-    public ClaimManagementService claimManagementService(ClaimRepository claimRepository, ContinuationTokenService continuationTokenService) {
-        return new ClaimManagementService(claimRepository, continuationTokenService);
+    public ClaimManagementServiceImpl claimManagementService(ClaimRepository claimRepository, ContinuationTokenService continuationTokenService,
+                                                             ConversionService conversionService,
+                                                             KafkaTemplate<String, TBase> kafkaTemplate,
+                                                             ClaimEventFactory claimEventFactory,
+                                                             RetryTemplate retryTemplate) {
+        return new ClaimManagementServiceImpl(
+                claimRepository,
+                continuationTokenService,
+                conversionService,
+                kafkaTemplate,
+                claimEventFactory,
+                retryTemplate);
     }
 
     @Bean
     public ClaimManagementSrv.Iface claimManagementHandler(
-            ClaimManagementService claimManagementService,
-            ConversionService conversionService,
-            KafkaTemplate<String, TBase> kafkaTemplate,
-            ClaimEventFactory claimEventFactory,
-            RetryTemplate retryTemplate
-    ) {
-        return new ClaimHandlerEventSinkDecorator(
-                new ClaimManagementHandler(claimManagementService, conversionService),
-                kafkaTemplate,
-                claimEventFactory,
-                retryTemplate);
+            ClaimManagementServiceImpl claimManagementService,
+            ConversionService conversionService) {
+        return new ClaimManagementHandler(claimManagementService, conversionService);
     }
 }
