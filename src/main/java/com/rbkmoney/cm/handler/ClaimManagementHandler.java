@@ -5,7 +5,7 @@ import com.rbkmoney.cm.model.ClaimModel;
 import com.rbkmoney.cm.model.ClaimStatusEnum;
 import com.rbkmoney.cm.model.MetadataModel;
 import com.rbkmoney.cm.pageable.ClaimPageResponse;
-import com.rbkmoney.cm.service.ClaimManagementServiceImpl;
+import com.rbkmoney.cm.service.ClaimManagementService;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.geck.common.util.TBaseUtil;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
 
-    private final ClaimManagementServiceImpl claimManagementService;
+    private final ClaimManagementService claimManagementService;
 
     private final ConversionService conversionService;
 
