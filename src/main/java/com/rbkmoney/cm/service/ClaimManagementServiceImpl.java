@@ -25,6 +25,7 @@ import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.rbkmoney.cm.repository.ClaimSpecifications.equalsByPartyIdAndClaimId;
@@ -310,7 +311,16 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
     private void sendToEventSinkWithRetry(String claimId, Event event) {
         retryTemplate.execute(arg0 -> {
-            kafkaTemplate.send(eventSinkTopic, claimId, event);
+            try {
+                kafkaTemplate.send(eventSinkTopic, claimId, event)
+                        .get();
+            } catch (InterruptedException e) {
+                log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
+                throw new RuntimeException("Error when sendToEventSinkWithRetry");
+            }
             return null;
         });
     }

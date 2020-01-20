@@ -59,7 +59,7 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
                 )
                 .build(ClaimManagementSrv.Iface.class);
 
-        Mockito.when(kafkaTemplate.send(any(), any())).thenReturn(new AsyncResult<>(null));
+        Mockito.when(kafkaTemplate.send(any(), any(), any())).thenReturn(new AsyncResult<>(null));
 
     }
 
