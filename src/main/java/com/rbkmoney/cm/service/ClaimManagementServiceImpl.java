@@ -319,7 +319,7 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 Thread.currentThread().interrupt();
             } catch (ExecutionException e) {
                 log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
-                throw new RuntimeException("Error when sendToEventSinkWithRetry");
+                throw new RuntimeException("Error when sendToEventSinkWithRetry", e);
             }
             return null;
         });
