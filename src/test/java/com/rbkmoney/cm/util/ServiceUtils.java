@@ -6,6 +6,7 @@ import com.rbkmoney.cm.model.UserTypeEnum;
 import com.rbkmoney.damsel.claim_management.Claim;
 import com.rbkmoney.damsel.claim_management.ClaimManagementSrv;
 import com.rbkmoney.damsel.claim_management.Modification;
+import com.rbkmoney.damsel.claim_management.PartyModification;
 import com.rbkmoney.woody.api.flow.WFlow;
 import lombok.SneakyThrows;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.Callable;
 public class ServiceUtils {
 
     public static Claim createClaim(ClaimManagementSrv.Iface client, String partyId, int modificationCount) {
-        List<Modification> modification = MockUtil.generateTBaseList(Modification.class, 5);
+        List<Modification> modification = MockUtil.generateTBaseList(Modification.party_modification(new PartyModification()), 5);
         return createClaim(client, partyId, modification);
     }
 
