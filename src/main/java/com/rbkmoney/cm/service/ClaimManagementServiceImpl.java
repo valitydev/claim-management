@@ -138,7 +138,9 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.revoked, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
         );
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.revoked(new ClaimRevoked()), claimModel.getUpdatedAt()));
+        ClaimRevoked claimRevoked = new ClaimRevoked();
+        claimRevoked.setReason(reason);
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.revoked(claimRevoked), claimModel.getUpdatedAt()));
         return claimModel;
     }
 
@@ -150,7 +152,9 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.denied, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
         );
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.denied(new ClaimDenied()), claimModel.getUpdatedAt()));
+        ClaimDenied claimDenied = new ClaimDenied();
+        claimDenied.setReason(reason);
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.denied(claimDenied), claimModel.getUpdatedAt()));
         return claimModel;
     }
 

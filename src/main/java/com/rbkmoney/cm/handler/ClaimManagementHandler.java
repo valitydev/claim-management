@@ -6,6 +6,7 @@ import com.rbkmoney.cm.model.ClaimStatusEnum;
 import com.rbkmoney.cm.model.MetadataModel;
 import com.rbkmoney.cm.pageable.ClaimPageResponse;
 import com.rbkmoney.cm.service.ClaimManagementService;
+import com.rbkmoney.damsel.base.InvalidRequest;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.geck.common.util.TBaseUtil;
@@ -26,12 +27,12 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     private final ConversionService conversionService;
 
     @Override
-    public Claim createClaim(String partyId, List<Modification> changeset) throws TException {
+    public Claim createClaim(String partyId, List<Modification> changeset) throws PartyNotFound, ChangesetConflict, InvalidChangeset, InvalidRequest, TException {
         return claimManagementService.createClaim(partyId, changeset);
     }
 
     @Override
-    public void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset) throws TException {
+    public void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, ChangesetConflict, InvalidChangeset, TException {
         try {
             claimManagementService.updateClaim(partyId, claimId, revision, changeset);
         } catch (InvalidClaimStatusException ex) {
@@ -46,7 +47,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public Claim getClaim(String partyId, long claimId) throws TException {
+    public Claim getClaim(String partyId, long claimId) throws PartyNotFound, ClaimNotFound, TException {
         try {
             ClaimModel claimModel = claimManagementService.getClaim(partyId, claimId);
             return conversionService.convert(claimModel, Claim.class);
@@ -56,7 +57,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public ClaimSearchResponse searchClaims(ClaimSearchQuery claimRequest) throws TException {
+    public ClaimSearchResponse searchClaims(ClaimSearchQuery claimRequest) throws PartyNotFound, LimitExceeded, BadContinuationToken, TException {
         List<ClaimStatusEnum> claimStatusEnums = Optional.ofNullable(claimRequest.getStatuses())
                 .map(
                         statuses -> statuses.stream()
@@ -87,7 +88,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void acceptClaim(String partyId, long claimId, int revision) throws TException {
+    public void acceptClaim(String partyId, long claimId, int revision) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, InvalidChangeset, TException {
         try {
             claimManagementService.acceptClaim(partyId, claimId, revision);
         } catch (ClaimNotFoundException ex) {
@@ -100,7 +101,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void denyClaim(String partyId, long claimId, int revision, String reason) throws TException {
+    public void denyClaim(String partyId, long claimId, int revision, String reason) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, TException {
         try {
             claimManagementService.denyClaim(partyId, claimId, revision, reason);
         } catch (ClaimNotFoundException ex) {
@@ -113,7 +114,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void revokeClaim(String partyId, long claimId, int revision, String reason) throws TException {
+    public void revokeClaim(String partyId, long claimId, int revision, String reason) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, TException {
         try {
             claimManagementService.revokeClaim(partyId, claimId, revision, reason);
         } catch (ClaimNotFoundException ex) {
@@ -126,7 +127,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void requestClaimReview(String partyId, long claimId, int revision) throws TException {
+    public void requestClaimReview(String partyId, long claimId, int revision) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, TException {
         try {
             claimManagementService.requestClaimReview(partyId, claimId, revision);
         } catch (ClaimNotFoundException ex) {
@@ -139,7 +140,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void requestClaimChanges(String partyId, long claimId, int revision) throws TException {
+    public void requestClaimChanges(String partyId, long claimId, int revision) throws PartyNotFound, ClaimNotFound, InvalidClaimStatus, InvalidClaimRevision, TException {
         try {
             claimManagementService.requestClaimChanges(partyId, claimId, revision);
         } catch (ClaimNotFoundException ex) {
@@ -152,7 +153,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public Value getMetadata(String partyId, long claimId, String key) throws TException {
+    public Value getMetadata(String partyId, long claimId, String key) throws PartyNotFound, ClaimNotFound, MetadataKeyNotFound, TException {
         try {
             MetadataModel metadataModel = claimManagementService.getMetadata(partyId, claimId, key);
             return conversionService.convert(metadataModel, Value.class);
@@ -164,7 +165,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void setMetadata(String partyId, long claimId, String key, Value value) throws TException {
+    public void setMetadata(String partyId, long claimId, String key, Value value) throws PartyNotFound, ClaimNotFound, TException {
         MetadataModel metadataModel = conversionService.convert(Map.entry(key, value), MetadataModel.class);
         try {
             claimManagementService.setMetadata(partyId, claimId, key, metadataModel);
@@ -174,7 +175,7 @@ public class ClaimManagementHandler implements ClaimManagementSrv.Iface {
     }
 
     @Override
-    public void removeMetadata(String partyId, long claimId, String key) throws TException {
+    public void removeMetadata(String partyId, long claimId, String key) throws PartyNotFound, ClaimNotFound, MetadataKeyNotFound, TException {
         try {
             claimManagementService.removeMetadata(partyId, claimId, key);
         } catch (ClaimNotFoundException ex) {
