@@ -14,12 +14,12 @@ import java.util.List;
 
 public interface ClaimManagementService {
 
-    public Claim createClaim(String partyId, List<Modification> changeset);
+    Claim createClaim(String partyId, List<Modification> changeset);
 
     void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset);
 
     ClaimModel getClaim(String partyId, long claimId);
-    
+
     ClaimModel acceptClaim(String partyId, long claimId, int revision);
 
     ClaimModel revokeClaim(String partyId, long claimId, int revision, String reason);

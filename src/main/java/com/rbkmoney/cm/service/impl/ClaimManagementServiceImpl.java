@@ -1,4 +1,4 @@
-package com.rbkmoney.cm.service;
+package com.rbkmoney.cm.service.impl;
 
 import com.rbkmoney.cm.exception.*;
 import com.rbkmoney.cm.model.*;
@@ -7,6 +7,9 @@ import com.rbkmoney.cm.model.status.StatusModificationTypeEnum;
 import com.rbkmoney.cm.pageable.ClaimPageRequest;
 import com.rbkmoney.cm.pageable.ClaimPageResponse;
 import com.rbkmoney.cm.repository.ClaimRepository;
+import com.rbkmoney.cm.service.ClaimManagementService;
+import com.rbkmoney.cm.service.ContinuationTokenService;
+import com.rbkmoney.cm.service.ConversionWrapperService;
 import com.rbkmoney.cm.util.ClaimEventFactory;
 import com.rbkmoney.cm.util.ContextUtil;
 import com.rbkmoney.damsel.claim_management.*;
@@ -14,19 +17,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
 import org.hibernate.Hibernate;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static com.rbkmoney.cm.repository.ClaimSpecifications.equalsByPartyIdAndClaimId;
 import static com.rbkmoney.cm.repository.ClaimSpecifications.equalsByPartyIdClaimIdAndStatusIn;
@@ -36,28 +40,28 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @RequiredArgsConstructor
 public class ClaimManagementServiceImpl implements ClaimManagementService {
 
-    private final ClaimRepository claimRepository;
-
     private final ContinuationTokenService continuationTokenService;
 
-    private final ConversionService conversionService;
+    private final ConversionWrapperService conversionWrapperService;
 
-    private final KafkaTemplate<String, TBase> kafkaTemplate;
+    private final ClaimRepository claimRepository;
 
     private final ClaimEventFactory claimEventFactory;
 
+    private final KafkaTemplate<String, TBase> kafkaTemplate;
+
     private final RetryTemplate retryTemplate;
 
-    @org.springframework.beans.factory.annotation.Value("${kafka.topic.claim.event.sink}")
-    private String eventSinkTopic;
+    private final String eventSinkTopic;
 
     @Override
     @Transactional
     public Claim createClaim(String partyId, List<Modification> changeset) {
         log.info("Trying to create new claim, partyId='{}', modifications='{}'", partyId, changeset);
-        List<ModificationModel> modifications = changeset.stream()
-                .map(change -> conversionService.convert(change, ModificationModel.class))
-                .collect(Collectors.toList());
+
+        List<ModificationModel> modifications = conversionWrapperService.convertModifications(changeset);
+
+        checkEquals(modifications, modifications);
 
         ClaimStatusModel claimStatusModel = new ClaimStatusModel();
         claimStatusModel.setClaimStatusEnum(ClaimStatusEnum.pending);
@@ -65,15 +69,20 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         ClaimModel claimModel = new ClaimModel();
         claimModel.setPartyId(partyId);
         claimModel.setClaimStatus(claimStatusModel);
+
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
         claimModel = claimRepository.saveAndFlush(claimModel);
 
-        Claim claim = conversionService.convert(claimModel, Claim.class);
-        sendToEventSinkWithRetry(String.valueOf(claim.getId()), claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim));
+        Claim claim = conversionWrapperService.convertClaim(claimModel);
+
+        Event claimEvent = claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim);
+
+        sendToEventSinkWithRetry(String.valueOf(claim.getId()), claimEvent);
 
         log.info("Claim have been created, partyId='{}', claim='{}'", partyId, claim);
+
         return claim;
     }
 
@@ -81,11 +90,13 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Transactional
     public void updateClaim(String partyId, long claimId, int revision, List<Modification> changeset) {
         log.info("Trying to update claim, partyId='{}', claimId='{}', revision='{}', modifications='{}'", partyId, claimId, revision, changeset);
-        List<ModificationModel> modifications = changeset.stream()
-                .map(change -> conversionService.convert(change, ModificationModel.class))
-                .collect(Collectors.toList());
+
+        List<ModificationModel> modifications = conversionWrapperService.convertModifications(changeset);
+
+        checkEquals(modifications, modifications);
 
         ClaimModel claimModel = getClaim(partyId, claimId, false);
+
         checkRevision(claimModel, revision);
         checkStatus(claimModel, Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review));
         checkForConflicts(claimModel.getModifications(), modifications);
@@ -95,7 +106,9 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
         claimModel = claimRepository.saveAndFlush(claimModel);
 
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createUpdateClaimEvent(partyId, claimId, revision, changeset, claimModel.getUpdatedAt()));
+        Event claimEvent = claimEventFactory.createUpdateClaimEvent(partyId, claimId, revision, changeset, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
 
         log.info("Claim have been updated, partyId='{}', claim='{}'", partyId, claimModel);
     }
@@ -106,18 +119,6 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         return getClaim(partyId, claimId, true);
     }
 
-    private ClaimModel getClaim(String partyId, long claimId, boolean needInitialize) {
-        ClaimModel claimModel = claimRepository.findOne(
-                where(equalsByPartyIdAndClaimId(partyId, claimId))
-        ).orElseThrow(ClaimNotFoundException::new);
-
-        if (needInitialize) {
-            initializeClaim(claimModel);
-        }
-
-        return claimModel;
-    }
-
     @Override
     @Transactional
     public ClaimModel acceptClaim(String partyId, long claimId, int revision) {
@@ -126,7 +127,12 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.pending_acceptance, null),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
         );
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.accepted(new ClaimAccepted()), claimModel.getUpdatedAt()));
+
+        ClaimStatus accepted = ClaimStatus.accepted(new ClaimAccepted());
+        Event claimEvent = claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, accepted, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
+
         return claimModel;
     }
 
@@ -138,9 +144,15 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.revoked, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
         );
+
         ClaimRevoked claimRevoked = new ClaimRevoked();
         claimRevoked.setReason(reason);
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.revoked(claimRevoked), claimModel.getUpdatedAt()));
+
+        ClaimStatus revoked = ClaimStatus.revoked(claimRevoked);
+        Event claimEvent = claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, revoked, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
+
         return claimModel;
     }
 
@@ -152,9 +164,15 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.denied, reason),
                 Arrays.asList(ClaimStatusEnum.pending, ClaimStatusEnum.review)
         );
+
         ClaimDenied claimDenied = new ClaimDenied();
         claimDenied.setReason(reason);
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.denied(claimDenied), claimModel.getUpdatedAt()));
+
+        ClaimStatus denied = ClaimStatus.denied(claimDenied);
+        Event claimEvent = claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, denied, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
+
         return claimModel;
     }
 
@@ -166,7 +184,12 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.review, null),
                 Collections.singletonList(ClaimStatusEnum.pending)
         );
-        sendToEventSinkWithRetry(String.valueOf(claimId), claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.review(new ClaimReview()), claimModel.getUpdatedAt()));
+
+        ClaimStatus review = ClaimStatus.review(new ClaimReview());
+        Event claimEvent = claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, review, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
+
         return claimModel;
     }
 
@@ -178,17 +201,21 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                 new ClaimStatusModel(ClaimStatusEnum.pending, null),
                 Collections.singletonList(ClaimStatusEnum.review)
         );
-        sendToEventSinkWithRetry(
-                String.valueOf(claimId),
-                claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, ClaimStatus.pending(new ClaimPending()), claimModel.getUpdatedAt())
-        );
+
+        ClaimStatus pending = ClaimStatus.pending(new ClaimPending());
+        Event claimEvent = claimEventFactory.createChangeStatusEvent(partyId, claimId, revision, pending, claimModel.getUpdatedAt());
+
+        sendToEventSinkWithRetry(String.valueOf(claimId), claimEvent);
+
         return claimModel;
     }
 
     @Override
     public ClaimModel changeStatus(String partyId, long claimId, int revision, ClaimStatusModel targetClaimStatus, List<ClaimStatusEnum> expectedStatuses) {
         log.info("Trying to change status in claim, claimId='{}', targetStatus='{}'", claimId, targetClaimStatus);
+
         ClaimModel claimModel = getClaim(partyId, claimId, false);
+
         if (claimModel.getClaimStatus().getClaimStatusEnum() == targetClaimStatus.getClaimStatusEnum()) {
             log.info("Claim is already in target status, status='{}'", targetClaimStatus);
             return claimModel;
@@ -207,7 +234,9 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
         log.info("Status in claim have been changed, claimId='{}', targetStatus='{}'", claimId, targetClaimStatus);
 
-        return claimRepository.save(claimModel);
+        claimRepository.save(claimModel);
+
+        return claimModel;
     }
 
     @Override
@@ -232,12 +261,16 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Transactional
     public Page<ClaimModel> searchClaims(String partyId, Long claimId, List<ClaimStatusEnum> statuses, ClaimPageRequest claimPageRequest) {
         log.info("Trying to search claims, partyId='{}', statuses='{}', pageRequest='{}'", partyId, statuses, claimPageRequest);
+
         Page<ClaimModel> claims = claimRepository.findAll(
                 equalsByPartyIdClaimIdAndStatusIn(partyId, claimId, statuses),
                 PageRequest.of(claimPageRequest.getPage(), claimPageRequest.getLimit(), Sort.Direction.DESC, "id")
         );
+
         claims.getContent().forEach(this::initializeClaim);
+
         log.info("{} claims have been found", claims.getTotalElements());
+
         return claims;
     }
 
@@ -245,13 +278,16 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Transactional
     public MetadataModel getMetadata(String partyId, long claimId, String key) {
         log.info("Trying to get metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
+
         ClaimModel claimModel = getClaim(partyId, claimId, false);
 
         MetadataModel metadataModel = claimModel.getMetadata().stream()
                 .filter(metadata -> key.equals(metadata.getKey()))
                 .findFirst()
                 .orElseThrow(MetadataKeyNotFoundException::new);
+
         log.info("Metadata field have been found, metadata='{}'", metadataModel);
+
         return metadataModel;
     }
 
@@ -259,11 +295,13 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Transactional
     public void setMetadata(String partyId, long claimId, String key, MetadataModel metadataModel) {
         log.info("Trying to change metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
-        ClaimModel claimModel = getClaim(partyId, claimId, false);
 
+        ClaimModel claimModel = getClaim(partyId, claimId, false);
         claimModel.getMetadata().removeIf(metadata -> key.equals(metadata.getKey()));
         claimModel.getMetadata().add(metadataModel);
+
         claimRepository.save(claimModel);
+
         log.info("metadata field have been changed, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
     }
 
@@ -271,19 +309,36 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Transactional
     public void removeMetadata(String partyId, long claimId, String key) {
         log.info("Trying to remove metadata field, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
-        ClaimModel claimModel = getClaim(partyId, claimId, false);
 
+        ClaimModel claimModel = getClaim(partyId, claimId, false);
         claimModel.getMetadata().removeIf(metadata -> key.equals(metadata.getKey()));
+
         claimRepository.save(claimModel);
+
         log.info("metadata field have been removed, partyId='{}', claimId='{}', key='{}'", partyId, claimId, key);
+    }
+
+    private ClaimModel getClaim(String partyId, long claimId, boolean needInitialize) {
+        ClaimModel claimModel = claimRepository.findOne(
+                where(equalsByPartyIdAndClaimId(partyId, claimId))
+        )
+                .orElseThrow(ClaimNotFoundException::new);
+
+        if (needInitialize) {
+            initializeClaim(claimModel);
+        }
+
+        return claimModel;
     }
 
     private void checkForConflicts(List<ModificationModel> oldModifications, List<ModificationModel> newModifications) {
         for (ModificationModel newModification : newModifications) {
             for (ModificationModel oldModification : oldModifications) {
                 if (oldModification.canEqual(newModification)) {
-                    log.warn("Found conflict in modifications, oldModification='{}', newModification='{}'", oldModification, newModification);
-                    throw new ChangesetConflictException(oldModification.getId());
+                    throw new ChangesetConflictException(
+                            String.format("Found conflict in modifications, oldModification='%s', newModification='%s'", oldModification, newModification),
+                            oldModification.getId()
+                    );
                 }
             }
         }
@@ -291,15 +346,37 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
     private void checkStatus(ClaimModel claimModel, List<ClaimStatusEnum> expectedStatuses) {
         if (!expectedStatuses.isEmpty() && !expectedStatuses.contains(claimModel.getClaimStatus().getClaimStatusEnum())) {
-            log.warn("Invalid claim status, expected='{}', actual='{}'", expectedStatuses, claimModel.getClaimStatus().getClaimStatusEnum());
-            throw new InvalidClaimStatusException(claimModel.getClaimStatus());
+            throw new InvalidClaimStatusException(
+                    String.format("Invalid claim status, expected='%s', actual='%s'", expectedStatuses, claimModel.getClaimStatus().getClaimStatusEnum()),
+                    claimModel.getClaimStatus()
+            );
         }
     }
 
     private void checkRevision(ClaimModel claimModel, int revision) {
         if (claimModel.getRevision() != revision) {
-            log.warn("Invalid claim revision, expected='{}', actual='{}'", claimModel.getRevision(), revision);
-            throw new InvalidRevisionException();
+            throw new InvalidRevisionException(
+                    String.format("Invalid claim revision, expected='%s', actual='%s'", claimModel.getRevision(), revision)
+            );
+        }
+    }
+
+    private void checkEquals(List<ModificationModel> oldModifications, List<ModificationModel> newModifications) {
+        List<ModificationModel> conflictModifications = new ArrayList<>();
+
+        for (int i = 0; i < newModifications.size() - 1; i++) {
+            for (int j = i + 1; j < oldModifications.size(); j++) {
+                if (newModifications.get(i).canEqual(oldModifications.get(j))) {
+                    conflictModifications.add(oldModifications.get(j));
+                }
+            }
+        }
+
+        if (!conflictModifications.isEmpty()) {
+            throw new InvalidChangesetException(
+                    String.format("ModificationModels contains doubles, count=%s", conflictModifications.size()),
+                    conflictModifications
+            );
         }
     }
 
@@ -308,24 +385,25 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         Hibernate.initialize(claimModel.getMetadata());
     }
 
-    private ModificationModel addUserInfo(ModificationModel modificationModel) {
+    private void addUserInfo(ModificationModel modificationModel) {
         modificationModel.setUserInfo(ContextUtil.getUserInfoFromContext());
-        return modificationModel;
     }
 
     private void sendToEventSinkWithRetry(String claimId, Event event) {
-        retryTemplate.execute(arg0 -> {
-            try {
-                kafkaTemplate.send(eventSinkTopic, claimId, event)
-                        .get();
-            } catch (InterruptedException e) {
-                log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
-                throw new RuntimeException("Error when sendToEventSinkWithRetry", e);
-            }
-            return null;
-        });
+        retryTemplate.execute(
+                retryCallback -> {
+                    try {
+                        ListenableFuture<SendResult<String, TBase>> future = kafkaTemplate.send(eventSinkTopic, claimId, event);
+                        future.get();
+                    } catch (InterruptedException e) {
+                        log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        log.error("Error when sendToEventSinkWithRetry claimId: {}", claimId, e);
+                        throw new RuntimeException("Error when sendToEventSinkWithRetry", e);
+                    }
+                    return null;
+                }
+        );
     }
 }

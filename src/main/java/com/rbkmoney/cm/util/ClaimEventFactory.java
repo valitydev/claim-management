@@ -11,43 +11,46 @@ public class ClaimEventFactory {
 
     public Event createCreatedClaimEvent(String partyId, List<Modification> changeset, Claim claim) {
         Change change = new Change();
-        change.setCreated(new ClaimCreated()
-                .setCreatedAt(claim.getCreatedAt())
-                .setChangeset(changeset)
-                .setId(claim.getId())
-                .setPartyId(partyId)
-                .setRevision(claim.getRevision())
+        change.setCreated(
+                new ClaimCreated()
+                        .setCreatedAt(claim.getCreatedAt())
+                        .setChangeset(changeset)
+                        .setId(claim.getId())
+                        .setPartyId(partyId)
+                        .setRevision(claim.getRevision())
         );
-        return new Event().setChange(change)
+        return new Event()
+                .setChange(change)
                 .setOccuredAt(Instant.now().toString());
     }
 
     public Event createUpdateClaimEvent(String partyId, long claimId, int revision, List<Modification> changeset, Instant updatedAt) {
         Change change = new Change();
-        change.setUpdated(new ClaimUpdated()
-                .setId(claimId)
-                .setUpdatedAt(updatedAt.toString())
-                .setChangeset(changeset)
-                .setPartyId(partyId)
-                .setRevision(revision)
+        change.setUpdated(
+                new ClaimUpdated()
+                        .setId(claimId)
+                        .setUpdatedAt(updatedAt.toString())
+                        .setChangeset(changeset)
+                        .setPartyId(partyId)
+                        .setRevision(revision)
         );
         return new Event()
-                .setOccuredAt(Instant.now().toString())
-                .setChange(change);
+                .setChange(change)
+                .setOccuredAt(Instant.now().toString());
     }
 
     public Event createChangeStatusEvent(String partyId, long claimId, int revision, ClaimStatus claimStatus, Instant updatedAt) {
         Change change = new Change();
-        change.setStatusChanged(new ClaimStatusChanged()
-                .setUpdatedAt(updatedAt.toString())
-                .setId(claimId)
-                .setPartyId(partyId)
-                .setRevision(revision)
-                .setStatus(claimStatus)
+        change.setStatusChanged(
+                new ClaimStatusChanged()
+                        .setUpdatedAt(updatedAt.toString())
+                        .setId(claimId)
+                        .setPartyId(partyId)
+                        .setRevision(revision)
+                        .setStatus(claimStatus)
         );
         return new Event()
-                .setOccuredAt(Instant.now().toString())
-                .setChange(change);
+                .setChange(change)
+                .setOccuredAt(Instant.now().toString());
     }
-
 }
