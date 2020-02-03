@@ -1,9 +1,9 @@
 package com.rbkmoney.cm.handler;
 
 import com.rbkmoney.cm.AbstractKafkaIntegrationTest;
+import com.rbkmoney.cm.serde.ClaimManagementEventDeserializer;
 import com.rbkmoney.cm.service.ConversionWrapperService;
 import com.rbkmoney.cm.util.MockUtil;
-import com.rbkmoney.cm.util.WebHookDeserializer;
 import com.rbkmoney.damsel.claim_management.*;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.junit.Test;
@@ -27,16 +27,16 @@ public class ClaimHandlerEventSinkDecoratorTest extends AbstractKafkaIntegration
     private ConversionWrapperService conversionWrapperService;
 
     @Test
-    public void testCreateClaimAndGet() throws InterruptedException {
+    public void testCreateClaimAndGet() {
         Claim claim = createClaim(client, PARTY_ID_2, generateModifications(conversionWrapperService, () -> MockUtil.generateTBaseList(Modification.party_modification(new PartyModification()), 5)));
 
-        Consumer<String, Event> consumer = createConsumer(WebHookDeserializer.class);
+        Consumer<String, Event> consumer = createConsumer(ClaimManagementEventDeserializer.class);
         consumer.subscribe(List.of(Initializer.CLAIM_EVENT_SINK));
 
         consumer.poll(Duration.ofSeconds(5))
                 .forEach(event -> {
                     Event value = event.value();
-                    assertEquals(String.valueOf(claim.getId()), event.key());
+                    assertEquals(claim.getPartyId(), event.key());
                     assertEquals(claim.getId(), value.getChange().getCreated().getId());
                     assertEquals(5, value.getChange().getCreated().getChangesetSize());
                 });
@@ -46,7 +46,7 @@ public class ClaimHandlerEventSinkDecoratorTest extends AbstractKafkaIntegration
         consumer.poll(Duration.ofSeconds(5))
                 .forEach(event -> {
                     Event value = event.value();
-                    assertEquals(String.valueOf(claim.getId()), event.key());
+                    assertEquals(claim.getPartyId(), event.key());
                     assertEquals(claim.getId(), value.getChange().getUpdated().getId());
                     assertEquals(5, value.getChange().getUpdated().getChangesetSize());
                 });
@@ -56,7 +56,7 @@ public class ClaimHandlerEventSinkDecoratorTest extends AbstractKafkaIntegration
         consumer.poll(Duration.ofSeconds(5))
                 .forEach(event -> {
                     Event value = event.value();
-                    assertEquals(String.valueOf(claim.getId()), event.key());
+                    assertEquals(claim.getPartyId(), event.key());
                     assertEquals(claim.getId(), value.getChange().getStatusChanged().getId());
                     assertTrue(value.getChange().getStatusChanged().getStatus().isSetReview());
                 });
@@ -66,7 +66,7 @@ public class ClaimHandlerEventSinkDecoratorTest extends AbstractKafkaIntegration
         consumer.poll(Duration.ofSeconds(5))
                 .forEach(event -> {
                     Event value = event.value();
-                    assertEquals(String.valueOf(claim.getId()), event.key());
+                    assertEquals(claim.getPartyId(), event.key());
                     assertEquals(claim.getId(), value.getChange().getStatusChanged().getId());
                     assertTrue(value.getChange().getStatusChanged().getStatus().isSetPending());
                 });
