@@ -9,6 +9,7 @@ import com.rbkmoney.cm.service.ConversionWrapperService;
 import com.rbkmoney.cm.util.MockUtil;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.msgpack.Value;
+import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -96,6 +97,17 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
     public void testGetClaimWithWrongParty() {
         Claim claim = createClaim(client, conversionWrapperService, "party_id", 5);
         assertEquals(claim, callService(() -> client.getClaim("wrong_party", claim.getId())));
+    }
+
+    @Test(expected = WUndefinedResultException.class)
+    public void testTryingToEmptyDocumentID() {
+        Claim claim = createClaim(client, "claim_id", generateModifications(conversionWrapperService, () -> {
+            ClaimModification value = new ClaimModification();
+            DocumentModificationUnit value1 = new DocumentModificationUnit();
+            value1.setId("");
+            value.setDocumentModification(value1);
+            return MockUtil.generateTBaseList(Modification.claim_modification(value), 1);
+        }));
     }
 
     @Test
