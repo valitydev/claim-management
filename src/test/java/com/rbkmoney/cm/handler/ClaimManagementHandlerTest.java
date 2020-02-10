@@ -13,6 +13,7 @@ import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
 
+    public static final String EMPTY_STRING = "";
     @Autowired
     private ConversionWrapperService conversionWrapperService;
 
@@ -102,12 +104,17 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
     @Test(expected = WUndefinedResultException.class)
     public void testTryingToEmptyDocumentID() {
         Claim claim = createClaim(client, "claim_id", generateModifications(conversionWrapperService, () -> {
-            ClaimModification value = new ClaimModification();
-            DocumentModificationUnit value1 = new DocumentModificationUnit();
-            value1.setId("");
-            value.setDocumentModification(value1);
-            return MockUtil.generateTBaseList(Modification.claim_modification(value), 1);
+            return MockUtil.generateTBaseList(Modification.claim_modification(createClaimModification()), 1);
         }));
+    }
+
+    @NotNull
+    private ClaimModification createClaimModification() {
+        ClaimModification value = new ClaimModification();
+        DocumentModificationUnit documentModificationUnit = new DocumentModificationUnit();
+        documentModificationUnit.setId(EMPTY_STRING);
+        value.setDocumentModification(documentModificationUnit);
+        return value;
     }
 
     @Test
