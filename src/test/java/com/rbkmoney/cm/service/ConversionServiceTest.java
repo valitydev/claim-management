@@ -68,7 +68,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testDocumentModificationConverters() {
         DocumentModificationUnit documentModificationUnit = MockUtil.generateTBase(DocumentModificationUnit.class);
-
+        documentModificationUnit.setType(null);
         assertEquals(
                 documentModificationUnit,
                 conversionService.convert(
@@ -96,6 +96,9 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testClaimModificationConverters() {
         ClaimModification claimModification = MockUtil.generateTBase(ClaimModification.class);
+        if (claimModification.isSetDocumentModification()) {
+            claimModification.getDocumentModification().setType(null);
+        }
         assertEquals(
                 claimModification,
                 conversionService.convert(
@@ -161,6 +164,12 @@ public class ConversionServiceTest {
     @Repeat(20)
     public void testAllClaimConverters() {
         Claim claim = MockUtil.generateTBase(Claim.class);
+        claim.getChangeset().stream().forEach(changeset -> {
+            if (changeset.getModification().isSetClaimModification()
+                    && changeset.getModification().getClaimModification().isSetDocumentModification()) {
+                changeset.getModification().getClaimModification().getDocumentModification().setType(null);
+            }
+        });
         if (CollectionUtils.isEmpty(claim.getMetadata())) {
             claim.setMetadata(null);
         }
