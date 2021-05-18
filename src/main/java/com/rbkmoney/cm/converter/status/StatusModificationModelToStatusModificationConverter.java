@@ -7,14 +7,18 @@ import com.rbkmoney.damsel.claim_management.StatusModification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StatusModificationModelToStatusModificationConverter implements ClaimConverter<StatusModificationModel, StatusModification> {
+public class StatusModificationModelToStatusModificationConverter
+        implements ClaimConverter<StatusModificationModel, StatusModification> {
+
     @Override
     public StatusModification convert(StatusModificationModel statusModificationModel) {
         switch (statusModificationModel.getStatusModificationType()) {
             case change:
                 return StatusModification.change(new StatusChanged());
             default:
-                throw new IllegalArgumentException(String.format("Unknown type '%s'", statusModificationModel.getStatusModificationType()));
+                throw new IllegalArgumentException(
+                        String.format("Unknown type '%s'", statusModificationModel.getStatusModificationType()));
         }
     }
+
 }

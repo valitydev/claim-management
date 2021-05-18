@@ -6,7 +6,9 @@ import com.rbkmoney.geck.common.util.TypeUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LegalAgreementToLegalAgreementModelConverter implements ClaimConverter<LegalAgreement, LegalAgreementModel> {
+public class LegalAgreementToLegalAgreementModelConverter
+        implements ClaimConverter<LegalAgreement, LegalAgreementModel> {
+
     @Override
     public LegalAgreementModel convert(LegalAgreement legalAgreement) {
         LegalAgreementModel legalAgreementModel = new LegalAgreementModel();
@@ -17,4 +19,5 @@ public class LegalAgreementToLegalAgreementModelConverter implements ClaimConver
         }
         return legalAgreementModel;
     }
+
 }

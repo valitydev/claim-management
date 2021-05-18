@@ -5,11 +5,15 @@ import com.rbkmoney.cm.model.contract.ContractContractorChangeModificationModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ContractContractorIdToContractContractorChangeModificationModelConverter implements ClaimConverter<String, ContractContractorChangeModificationModel> {
+public class ContractContractorIdToContractContractorChangeModificationModelConverter
+        implements ClaimConverter<String, ContractContractorChangeModificationModel> {
+
     @Override
     public ContractContractorChangeModificationModel convert(String contractorId) {
-        ContractContractorChangeModificationModel contractContractorChangeModificationModel = new ContractContractorChangeModificationModel();
+        ContractContractorChangeModificationModel contractContractorChangeModificationModel =
+                new ContractContractorChangeModificationModel();
         contractContractorChangeModificationModel.setContractorId(contractorId);
         return contractContractorChangeModificationModel;
     }
+
 }
