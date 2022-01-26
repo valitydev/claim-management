@@ -11,7 +11,6 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,7 +74,6 @@ public abstract class AbstractKafkaIntegrationTest extends AbstractIntegrationTe
             initTopic(CLAIM_EVENT_SINK);
         }
 
-        @NotNull
         private <T> Consumer<String, T> initTopic(String topicName) {
             Properties props = new Properties();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());

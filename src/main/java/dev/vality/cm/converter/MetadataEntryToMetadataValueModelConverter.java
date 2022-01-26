@@ -5,6 +5,7 @@ import dev.vality.damsel.msgpack.Value;
 import lombok.SneakyThrows;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.transport.TTransportException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,7 +15,13 @@ public class MetadataEntryToMetadataValueModelConverter
         implements ClaimConverter<Map.Entry<String, Value>, MetadataModel> {
 
     ThreadLocal<TSerializer> thriftSerializerThreadLocal =
-            ThreadLocal.withInitial(() -> new TSerializer(new TBinaryProtocol.Factory()));
+            ThreadLocal.withInitial(() -> {
+                try {
+                    return new TSerializer(new TBinaryProtocol.Factory());
+                } catch (TTransportException e) {
+                    throw new RuntimeException();
+                }
+            });
 
     @Override
     @SneakyThrows

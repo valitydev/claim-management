@@ -83,7 +83,7 @@ public abstract class AbstractWithCommittersIntegrationTest extends AbstractInte
         addServlet(createThriftRpcService(ClaimCommitterSrv.Iface.class, new ClaimCommitterSrv.Iface() {
             @Override
             public void accept(String partyId, Claim claim) throws TException {
-                throw new InvalidChangeset("invalid changeset", List.of());
+                throw new InvalidChangeset().setReasonLegacy("invalid changeset");
             }
 
             @Override
