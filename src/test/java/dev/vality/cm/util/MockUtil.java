@@ -34,7 +34,8 @@ public class MockUtil {
 
     private static final Map.Entry<String[], FieldHandler> timeFields = Map.entry(
             new String[] {"created_at", "updated_at", "signed_at", "valid_until"},
-            structHandler -> structHandler.value(TypeUtil.temporalToString(Instant.now().truncatedTo(ChronoUnit.MILLIS)))
+            structHandler ->
+                    structHandler.value(TypeUtil.temporalToString(Instant.now().truncatedTo(ChronoUnit.MILLIS)))
     );
 
     public static <T extends TBase> List<T> generateTBaseList(T thriftBase, int count) {
