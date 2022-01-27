@@ -7,15 +7,8 @@ import dev.vality.cm.service.ConversionWrapperService;
 import dev.vality.damsel.claim_management.Claim;
 import dev.vality.damsel.claim_management.ClaimManagementSrv;
 import dev.vality.damsel.claim_management.Modification;
-import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.woody.api.flow.WFlow;
 import lombok.SneakyThrows;
-
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -116,17 +109,6 @@ public class ServiceUtils {
     public interface ThrowableRunnable {
 
         void run() throws Exception;
-
-    }
-
-    public static void main(String[] args) {
-        Instant now = Instant.now().plusNanos(1);
-        System.out.println("Now.toString                " + now.toString());
-        String str = TypeUtil.temporalToString(now);
-        System.out.println("TypeUtil.temporalToString() " + str);
-
-        Instant extracted = TypeUtil.stringToInstant(str);
-        System.out.println(TypeUtil.temporalToString(extracted));
 
     }
 }

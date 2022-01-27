@@ -4,13 +4,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Setter
 @Getter
@@ -25,9 +25,13 @@ public class ModificationModel {
     @GeneratedValue
     private long id;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+    }
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)

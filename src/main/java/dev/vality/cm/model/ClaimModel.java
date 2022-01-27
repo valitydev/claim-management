@@ -1,15 +1,14 @@
 package dev.vality.cm.model;
 
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Data
@@ -31,12 +30,20 @@ public class ClaimModel {
     @Embedded
     private ClaimStatusModel claimStatus;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @UpdateTimestamp
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+    }
+
     private Instant updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+    }
 
     @OrderBy
     @JoinColumn(name = "claim_id", nullable = false)

@@ -83,13 +83,9 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
-        log.info("sign_sdkaljd ClaimManagementServiceImpl:88 {}", Instant.now());
-        log.info("sign_sdkaljd ClaimManagementServiceImpl:89 {}", claimModel.getCreatedAt());
         claimModel = claimRepository.saveAndFlush(claimModel);
-        log.info("sign_sdkaljd ClaimManagementServiceImpl:91 {}", claimModel.getCreatedAt());
 
         Claim claim = conversionWrapperService.convertClaim(claimModel);
-        log.info("sign_sdkaljd ClaimManagementServiceImpl:94 {}", claim.getCreatedAt());
 
         Event claimEvent = claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim);
 
@@ -137,7 +133,6 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         log.info("Trying to get Claim, partyId={}, claimId={}", partyId, claimId);
 
         ClaimModel claimModel = getClaim(partyId, claimId, true);
-        log.info("sign_sdkaljd ClaimManagementServiceImpl:140 {}", claimModel.getCreatedAt());
 
         log.info("Claim has been got, partyId={}, claimId={}, claimModel={}", partyId, claimId, claimModel);
         return claimModel;
