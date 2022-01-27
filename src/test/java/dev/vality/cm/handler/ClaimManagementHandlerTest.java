@@ -64,9 +64,9 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testCreateClaimAndGet() {
+    public void testCreateClaimAndGet() throws TException {
         Claim claim = ServiceUtils.createClaim(client, conversionWrapperService, "party_id", 5);
-        assertEquals(claim, ServiceUtils.callService(() -> client.getClaim("party_id", claim.getId())));
+        assertEquals(claim, client.getClaim("party_id", claim.getId()));
     }
 
     @Test
