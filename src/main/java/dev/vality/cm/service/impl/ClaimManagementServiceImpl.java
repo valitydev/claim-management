@@ -2,10 +2,10 @@ package dev.vality.cm.service.impl;
 
 import dev.vality.cm.exception.*;
 import dev.vality.cm.model.*;
-import dev.vality.cm.model.*;
 import dev.vality.cm.model.status.StatusModificationModel;
 import dev.vality.cm.model.status.StatusModificationTypeEnum;
 import dev.vality.cm.repository.ClaimRepository;
+import dev.vality.cm.repository.ClaimSpecifications;
 import dev.vality.cm.repository.ModificationRepository;
 import dev.vality.cm.search.ClaimPageSearchParameters;
 import dev.vality.cm.search.ClaimPageSearchRequest;
@@ -19,8 +19,6 @@ import dev.vality.damsel.claim_management.Claim;
 import dev.vality.damsel.claim_management.Event;
 import dev.vality.damsel.claim_management.Modification;
 import dev.vality.damsel.claim_management.ModificationChange;
-import dev.vality.cm.exception.*;
-import dev.vality.cm.repository.ClaimSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
@@ -35,7 +33,6 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import javax.transaction.Transactional;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,9 +83,12 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
+        log.info("sign_sdkaljd ClaimManagementServiceImpl:89 {}", claimModel.getCreatedAt());
         claimModel = claimRepository.saveAndFlush(claimModel);
+        log.info("sign_sdkaljd ClaimManagementServiceImpl:91 {}", claimModel.getCreatedAt());
 
         Claim claim = conversionWrapperService.convertClaim(claimModel);
+        log.info("sign_sdkaljd ClaimManagementServiceImpl:94 {}", claim.getCreatedAt());
 
         Event claimEvent = claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim);
 
@@ -134,6 +134,7 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         log.info("Trying to get Claim, partyId={}, claimId={}", partyId, claimId);
 
         ClaimModel claimModel = getClaim(partyId, claimId, true);
+        log.info("sign_sdkaljd ClaimManagementServiceImpl:140 {}", claimModel.getCreatedAt());
 
         log.info("Claim has been got, partyId={}, claimId={}, claimModel={}", partyId, claimId, claimModel);
         return claimModel;
