@@ -95,3 +95,8 @@ kafka:
 event.sink.retry:
   backoff.period: 1000
   max.attempts: 3
+testcontainers:
+  postgresql:
+    tag: '11.4'
+  kafka:
+    tag: '6.2.0'
