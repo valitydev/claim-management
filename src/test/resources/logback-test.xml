@@ -5,8 +5,8 @@
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>test.log</file>
-        <rollingPolicy class="com.rbkmoney.log.appender.NoopRollingPolicy"/>
-        <triggeringPolicy class="com.rbkmoney.log.appender.RotationBasedTriggeringPolicy">
+        <rollingPolicy class="dev.vality.log.appender.NoopRollingPolicy"/>
+        <triggeringPolicy class="dev.vality.log.appender.RotationBasedTriggeringPolicy">
             <checkCachePeriod>5000</checkCachePeriod>
         </triggeringPolicy>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -43,6 +43,6 @@
     <root level="warn">
         <appender-ref ref="CONSOLE"/>
     </root>
-    <logger name="com.rbkmoney.woody" level="WARN"/>
-    <logger name="com.rbkmoney.cm" level="ALL"/>
+    <logger name="dev.vality.woody" level="WARN"/>
+    <logger name="dev.vality.cm" level="ALL"/>
 </configuration>
