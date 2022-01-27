@@ -71,8 +71,10 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
 
     @Test
     public void testCreateClaimAndUpdate() {
-        Claim claim = ServiceUtils.createClaim(client, "party_id", ServiceUtils.generateModifications(conversionWrapperService,
-                () -> MockUtil.generateTBaseList(Modification.party_modification(new PartyModification()), 5)));
+        Claim claim = ServiceUtils.createClaim(client, "party_id",
+                ServiceUtils.generateModifications(conversionWrapperService,
+                        () -> MockUtil.generateTBaseList(Modification.party_modification(
+                                new PartyModification()), 5)));
         assertEquals(claim, ServiceUtils.callService(() -> client.getClaim("party_id", claim.getId())));
         ServiceUtils.runService(() -> client.updateClaim("party_id", claim.getId(), 0,
                 ServiceUtils.generateModifications(conversionWrapperService, () -> MockUtil
