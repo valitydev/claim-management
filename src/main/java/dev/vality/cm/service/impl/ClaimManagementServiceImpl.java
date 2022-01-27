@@ -95,6 +95,10 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
         Claim claim = conversionWrapperService.convertClaim(claimModel);
 
+        System.out.println("claimModel after flush conversion " + claim);
+        System.out.println("claimModel getClaim  conversion " + conversionWrapperService.convertClaim(claim1));
+
+
         Event claimEvent = claimEventFactory.createCreatedClaimEvent(partyId, changeset, claim);
 
         sendToEventSinkWithRetry(partyId, claimEvent);
