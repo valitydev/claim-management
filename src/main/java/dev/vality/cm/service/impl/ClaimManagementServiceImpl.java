@@ -90,7 +90,7 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         claimModel = claimRepository.saveAndFlush(claimModel);
         System.out.println("claimModel after flush " + claimModel);
 
-        ClaimModel claim1 = getClaim(partyId, claimModel.getId(), true);
+        ClaimModel claim1 = getClaim(partyId, claimModel.getId());
         System.out.println("claimModel getClaim " + claim1);
 
         Claim claim = conversionWrapperService.convertClaim(claimModel);
