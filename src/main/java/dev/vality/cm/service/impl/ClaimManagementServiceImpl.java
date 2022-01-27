@@ -96,6 +96,8 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
 
         log.info("Claim have been created, partyId='{}', claim='{}'", partyId, claim);
 
+        getClaim(partyId, claim.getId());
+
         return claim;
     }
 
