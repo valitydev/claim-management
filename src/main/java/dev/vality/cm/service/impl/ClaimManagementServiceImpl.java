@@ -86,7 +86,12 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
+
         claimModel = claimRepository.saveAndFlush(claimModel);
+        System.out.println("claimModel after flush " + claimModel);
+
+        ClaimModel claim1 = getClaim(partyId, claimModel.getId(), true);
+        System.out.println("claimModel getClaim " + claim1);
 
         Claim claim = conversionWrapperService.convertClaim(claimModel);
 
