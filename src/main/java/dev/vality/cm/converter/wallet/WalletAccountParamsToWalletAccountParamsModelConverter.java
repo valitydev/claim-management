@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class WalletAccountParamsToWalletAccountParamsModelConverter
         implements ClaimConverter<WalletAccountParams, WalletAccountParamsModel> {
     @Override
-    public WalletAccountParamsModel convert(WalletAccountParams shopAccountParams) {
+    public WalletAccountParamsModel convert(WalletAccountParams walletAccountParams) {
         WalletAccountParamsModel walletAccountParamsModel = new WalletAccountParamsModel();
-        walletAccountParamsModel.setCurrencySymbolicCode(shopAccountParams.getCurrency().getSymbolicCode());
+        walletAccountParamsModel.setCurrencySymbolicCode(walletAccountParams.getCurrency().getSymbolicCode());
         return walletAccountParamsModel;
     }
 }
