@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -191,7 +192,7 @@ public class ConversionServiceTest {
         }
         List<ModificationUnit> modificationUnits = claim.getChangeset().stream()
                 .peek(mod -> {
-                    mod.setChangedAt(TypeUtil.temporalToString(Instant.now()));
+                    mod.setChangedAt(TypeUtil.temporalToString(Instant.now().truncatedTo(ChronoUnit.MICROS)));
                     mod.setRemovedAt(null);
                 })
                 .collect(Collectors.toList());

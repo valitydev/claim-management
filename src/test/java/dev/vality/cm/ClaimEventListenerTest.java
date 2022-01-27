@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +67,7 @@ public class ClaimEventListenerTest extends AbstractKafkaIntegrationTest {
         // Given
         final String partyId = UUID.randomUUID().toString();
         Event event = new Event();
-        event.setOccuredAt(TypeUtil.temporalToString(LocalDateTime.now()));
+        event.setOccuredAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)));
         Change change = new Change();
         event.setChange(change);
         ClaimStatusChanged claimStatusChanged = new ClaimStatusChanged();
@@ -75,7 +76,7 @@ public class ClaimEventListenerTest extends AbstractKafkaIntegrationTest {
         claimStatusChanged.setPartyId(partyId);
         claimStatusChanged.setStatus(ClaimStatus.pending_acceptance(new ClaimPendingAcceptance()));
         claimStatusChanged.setRevision(0);
-        claimStatusChanged.setUpdatedAt(TypeUtil.temporalToString(LocalDateTime.now()));
+        claimStatusChanged.setUpdatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)));
 
         // When
         Claim pendingClaim = ServiceUtils.createClaim(client, conversionWrapperService, partyId, 5);
