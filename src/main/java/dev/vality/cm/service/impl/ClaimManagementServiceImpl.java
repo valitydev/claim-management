@@ -83,6 +83,7 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
         modifications.forEach(this::addUserInfo);
         claimModel.setModifications(modifications);
 
+        log.info("sign_sdkaljd ClaimManagementServiceImpl:88 {}", Instant.now());
         log.info("sign_sdkaljd ClaimManagementServiceImpl:89 {}", claimModel.getCreatedAt());
         claimModel = claimRepository.saveAndFlush(claimModel);
         log.info("sign_sdkaljd ClaimManagementServiceImpl:91 {}", claimModel.getCreatedAt());
