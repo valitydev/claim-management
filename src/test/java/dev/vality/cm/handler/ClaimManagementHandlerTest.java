@@ -77,14 +77,20 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
 
         claim.setCreatedAt("kek");
         claim.setUpdatedAt("kek");
-        claim.getChangeset().forEach(c -> c.setChangedAt("kek"));
+        claim.getChangeset().forEach(c -> {
+            c.setCreatedAt("kek");
+            c.setChangedAt("kek");
+        });
 
         Claim actual = ServiceUtils.callService(() -> client.getClaim("party_id", claim.getId()));
 
 
         actual.setCreatedAt("kek");
         actual.setUpdatedAt("kek");
-        actual.getChangeset().forEach(c -> c.setChangedAt("kek"));
+        actual.getChangeset().forEach(c -> {
+            c.setCreatedAt("kek");
+            c.setChangedAt("kek");
+        });
 
         assertEquals(claim, actual);
 
