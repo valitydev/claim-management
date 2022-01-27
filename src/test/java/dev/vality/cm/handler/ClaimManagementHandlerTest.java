@@ -66,7 +66,9 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
     @Test
     public void testCreateClaimAndGet() {
         Claim claim = ServiceUtils.createClaim(client, conversionWrapperService, "party_id", 5);
-        assertEquals(claim, ServiceUtils.callService(() -> client.getClaim("party_id", claim.getId())));
+        Claim actual = ServiceUtils.callService(() -> client.getClaim("party_id", claim.getId()));
+        assertEquals(claim.getCreatedAt(), actual.getCreatedAt());
+        assertEquals(claim, actual);
     }
 
     @Test
