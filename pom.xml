@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.17</version>
     </parent>
 
     <artifactId>claim-management</artifactId>
@@ -26,8 +26,8 @@
         <db.user>postgres</db.user>
         <db.password>postgres</db.password>
         <db.schema>cm</db.schema>
-        <kafka.common.lib.version>0.1.7</kafka.common.lib.version>
-        <testcontainers.version>1.16.0</testcontainers.version>
+        <kafka.common.lib.version>0.1.9</kafka.common.lib.version>
+        <testcontainers.version>1.17.2</testcontainers.version>
 <!--        <shared.resources.version>1.0.0</shared.resources.version>-->
     </properties>
 
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-quickstart</artifactId>
-            <version>11.0.6</version>
+            <version>11.0.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -194,7 +194,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.7.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.shared</groupId>
