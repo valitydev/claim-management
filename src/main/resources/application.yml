@@ -1,10 +1,10 @@
 server:
-  port: @server.port@
+  port: '@server.port@'
 management:
   security:
     flag: false
   server:
-    port: @management.port@
+    port: '@management.port@'
   metrics:
     export:
       statsd:
@@ -25,16 +25,16 @@ management:
         include: health,info,prometheus
 spring:
   application:
-    name: @project.name@
+    name: '@project.name@'
   output:
     ansi:
       enabled: ALWAYS
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.postgresql.Driver
-    url: @db.url@
-    username: @db.user@
-    password: @db.password@
+    url: '@db.url@'
+    username: '@db.user@'
+    password: '@db.password@'
     hikari:
       maximum-pool-size: 3
       idle-timeout: 30000
@@ -67,7 +67,7 @@ spring:
       auto-offset-reset: earliest
       max-poll-records: 500
 info:
-  version: @project.version@
+  version: '@project.version@'
   stage: dev
 claim-management:
   continuation-secret: "Yp3s5v8t/B?E(H+MbQeThWB?E(H+MbQeThW"
