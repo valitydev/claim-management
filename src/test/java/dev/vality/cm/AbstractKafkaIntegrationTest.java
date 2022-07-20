@@ -1,7 +1,7 @@
 package dev.vality.cm;
 
 import dev.vality.cm.serde.ClaimManagementEventDeserializer;
-import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -67,7 +67,7 @@ public abstract class AbstractKafkaIntegrationTest extends AbstractIntegrationTe
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             kafka.start();
             TestPropertyValues.of(
-                            "kafka.bootstrap.servers=" + kafka.getBootstrapServers(),
+                            "spring.kafka.bootstrap-servers=" + kafka.getBootstrapServers(),
                             "kafka.topics.claim-event-sink.enabled=true"
                     )
                     .applyTo(configurableApplicationContext.getEnvironment());
