@@ -1,10 +1,10 @@
 server:
-  port: @server.port@
+  port: '@server.port@'
 management:
   security:
     flag: false
   server:
-    port: @management.port@
+    port: '@management.port@'
   metrics:
     export:
       statsd:
@@ -25,16 +25,16 @@ management:
         include: health,info,prometheus
 spring:
   application:
-    name: @project.name@
+    name: '@project.name@'
   output:
     ansi:
       enabled: ALWAYS
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.postgresql.Driver
-    url: @db.url@
-    username: @db.user@
-    password: @db.password@
+    url: '@db.url@'
+    username: '@db.user@'
+    password: '@db.password@'
     hikari:
       maximum-pool-size: 3
       idle-timeout: 30000
@@ -59,8 +59,15 @@ spring:
             non_contextual_creation: true
     #      ddl-auto: create
     database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+  kafka:
+    bootstrap-servers: "localhost:29092"
+    consumer:
+      client-id: claim-management
+      group-id: claim-management-group-1
+      auto-offset-reset: earliest
+      max-poll-records: 500
 info:
-  version: @project.version@
+  version: '@project.version@'
   stage: dev
 claim-management:
   continuation-secret: "Yp3s5v8t/B?E(H+MbQeThWB?E(H+MbQeThW"
@@ -70,28 +77,12 @@ claim-management:
 #      uri: http://hellgate:8022/v1/processing/claim_committer
 #      timeout: 5000
 kafka:
-  bootstrap.servers: "localhost:29092"
   topics:
     claim-event-sink:
       id: "claim-event-sink"
       enabled: false
-  client-id: claim-management
   consumer:
-    group-id: claim-management-group-1
-    enable-auto-commit: false
-    auto-offset-reset: earliest
     concurrency: 3
-    max-poll-records: 500
-  error-handler:
-    sleep-time-seconds: 5
-    maxAttempts: -1
-  ssl:
-    enable: false
-    keystore-location:
-    keystore-password:
-    key-password:
-    server-password:
-    server-keystore-location:
 event.sink.retry:
   backoff.period: 1000
   max.attempts: 3
