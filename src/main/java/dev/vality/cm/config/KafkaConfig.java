@@ -2,8 +2,8 @@ package dev.vality.cm.config;
 
 import dev.vality.cm.serde.ClaimManagementEventDeserializer;
 import dev.vality.damsel.claim_management.Event;
-import dev.vality.kafka.common.exception.handler.ExponentialBackOffDefaultErrorHandler;
 import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.kafka.common.util.ExponentialBackOffDefaultErrorHandlerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -20,7 +20,6 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.util.Map;
 
@@ -31,10 +30,6 @@ public class KafkaConfig {
     private final KafkaProperties kafkaProperties;
     @Value("${kafka.consumer.concurrency}")
     private int concurrency;
-    @Value("${kafka.error-handler.min-sleep-time-seconds}")
-    private int errorHandlerMinSleepTimeSeconds;
-    @Value("${kafka.error-handler.max-sleep-time-seconds}")
-    private int errorHandlerMaxSleepTimeSeconds;
 
     @Bean
     public ProducerFactory<String, TBase> producerFactory() {
@@ -70,11 +65,7 @@ public class KafkaConfig {
 
     @Bean
     public DefaultErrorHandler kafkaErrorHandler() {
-        ExponentialBackOff backOff = new ExponentialBackOff();
-        backOff.setInitialInterval(errorHandlerMinSleepTimeSeconds);
-        backOff.setMaxInterval(errorHandlerMaxSleepTimeSeconds);
-        ExponentialBackOffDefaultErrorHandler errorHandler =
-                new ExponentialBackOffDefaultErrorHandler(new ExponentialBackOff());
+        var errorHandler = ExponentialBackOffDefaultErrorHandlerFactory.create();
         errorHandler.setAckAfterHandle(false);
         return errorHandler;
     }

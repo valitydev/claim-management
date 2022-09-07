@@ -83,9 +83,6 @@ kafka:
       enabled: false
   consumer:
     concurrency: 3
-  error-handler:
-    min-sleep-time-seconds: 5
-    max-sleep-time-seconds: 1800
 event.sink.retry:
   backoff.period: 1000
   max.attempts: 3
