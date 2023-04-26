@@ -27,7 +27,7 @@ public class IdentityModificationModel extends ModificationModel {
 
     @Override
     public boolean canEqual(final Object that) {
-        return that instanceof NewWalletModificationModel
+        return that instanceof IdentityModificationModel
                 && identityId.equals(((IdentityModificationModel) that).getIdentityId());
     }
 }

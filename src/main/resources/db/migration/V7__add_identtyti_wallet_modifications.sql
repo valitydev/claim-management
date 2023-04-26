@@ -1,6 +1,6 @@
 create table cm.identity_modification_model
 (
-    id      int8              not null,
+    id          int8              not null,
     identity_id character varying not null,
     primary key (id)
 );
@@ -11,7 +11,7 @@ alter table if exists cm.identity_modification_model
 
 create table cm.identity_creation_modification_model
 (
-    id             int8 not null,
+    id                 int8 not null,
     identity_params_id int8 not null,
     primary key (id)
 );
@@ -34,7 +34,7 @@ alter table if exists cm.identity_creation_modification_model
 
 create table cm.new_wallet_modification_model
 (
-    id      int8              not null,
+    id            int8              not null,
     new_wallet_id character varying not null,
     primary key (id)
 );
@@ -44,7 +44,7 @@ alter table if exists cm.new_wallet_modification_model
 
 create table cm.new_wallet_creation_modification_model
 (
-    id             int8 not null,
+    id                   int8 not null,
     new_wallet_params_id int8 not null,
     primary key (id)
 );
