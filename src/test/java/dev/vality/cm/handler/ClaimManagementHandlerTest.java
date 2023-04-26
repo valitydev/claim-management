@@ -83,6 +83,7 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
                         .generateTBaseList(Modification.claim_modification(new ClaimModification()), 5))));
     }
 
+    @Repeat(5)
     @Test(expected = InvalidChangeset.class)
     public void testTryingToInvalidChansetWhenCreateClaimAndGet() {
         Modification modification = MockUtil.generateTBase(Modification.class);

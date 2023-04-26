@@ -153,6 +153,32 @@ public class ConversionServiceTest {
 
     @Test
     @Repeat(10)
+    public void testIdentityModificationConverters() {
+        IdentityModification identityModification = MockUtil.generateTBase(IdentityModification.class);
+        assertEquals(
+                identityModification,
+                conversionService.convert(
+                        conversionService.convert(identityModification, IdentityModification.class),
+                        IdentityModification.class
+                )
+        );
+    }
+
+    @Test
+    @Repeat(10)
+    public void testNewWalletModificationConverters() {
+        NewWalletModification newWalletModification = MockUtil.generateTBase(NewWalletModification.class);
+        assertEquals(
+                newWalletModification,
+                conversionService.convert(
+                        conversionService.convert(newWalletModification, NewWalletModification.class),
+                        NewWalletModification.class
+                )
+        );
+    }
+
+    @Test
+    @Repeat(10)
     public void testContractorModificationConverters() {
         ContractorModification contractorModification = MockUtil.generateTBase(ContractorModification.class);
         assertEquals(
