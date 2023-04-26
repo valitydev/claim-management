@@ -17,7 +17,6 @@ public class StringToMetadataValueModelConverter
     @Override
     @SneakyThrows
     public List<MetadataModel> convert(String stringMetadata) {
-        return objectMapper.readValue(stringMetadata, new TypeReference<>() {
-        });
+        return objectMapper.readValue(stringMetadata, new TypeReference<>() {});
     }
 }

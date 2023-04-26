@@ -22,8 +22,7 @@ public class NewWalletModificationToNewWalletModificationModelConverter
         if (newWalletModification.getSetField() == NewWalletModification._Fields.CREATION) {
             return conversionService.convert(
                     newWalletModification.getCreation(),
-                    NewWalletCreationModificationModel.class
-            );
+                    NewWalletCreationModificationModel.class);
         }
         throw new IllegalArgumentException(String.format("Unknown type '%s'", newWalletModification.getSetField()));
     }

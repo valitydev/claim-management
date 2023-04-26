@@ -28,6 +28,7 @@ public class IdentityParamsModel {
     @Column(nullable = false)
     private String provider;
 
+    @Column(nullable = true)
     private String metadata;
 
 }

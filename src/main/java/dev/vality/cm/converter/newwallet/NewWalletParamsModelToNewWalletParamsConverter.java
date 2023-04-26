@@ -38,10 +38,7 @@ public class NewWalletParamsModelToNewWalletParamsConverter
                                                         Collectors.toMap(
                                                                 MetadataModel::getKey,
                                                                 metadataModel -> conversionService
-                                                                        .convert(metadataModel, Value.class)
-                                                        )
-                                                )
-                                )
+                                                                        .convert(metadataModel, Value.class))))
                                 .orElse(null));
     }
 }

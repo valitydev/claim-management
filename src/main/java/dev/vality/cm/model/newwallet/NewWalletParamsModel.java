@@ -28,6 +28,7 @@ public class NewWalletParamsModel {
     @Column(nullable = false)
     private String currency;
 
+    @Column(nullable = true)
     private String metadata;
 
 }

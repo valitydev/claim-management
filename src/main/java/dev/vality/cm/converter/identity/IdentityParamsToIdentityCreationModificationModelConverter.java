@@ -34,8 +34,7 @@ public class IdentityParamsToIdentityCreationModificationModelConverter
                 identityParamsModel.setMetadata(
                         objectMapper.writeValueAsString(identityParams.getMetadata().entrySet().stream()
                                 .map(entry -> conversionService.convert(entry, MetadataModel.class))
-                                .collect(Collectors.toList()))
-                );
+                                .collect(Collectors.toList())));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Couldn't convert identity metadata to json string: " + e);
             }

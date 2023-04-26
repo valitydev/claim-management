@@ -34,8 +34,7 @@ public class NewWalletParamsToNewWalletCreationModificationModelConverter
                 newWalletParamsModel.setMetadata(
                         objectMapper.writeValueAsString(newWalletParams.getMetadata().entrySet().stream()
                                 .map(entry -> conversionService.convert(entry, MetadataModel.class))
-                                .collect(Collectors.toList()))
-                );
+                                .collect(Collectors.toList())));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Couldn't convert newWallet metadata to json string: " + e);
             }
