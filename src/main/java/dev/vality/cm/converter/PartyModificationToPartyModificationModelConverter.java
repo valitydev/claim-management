@@ -1,5 +1,6 @@
 package dev.vality.cm.converter;
 
+import dev.vality.cm.model.AdditionalInfoModificationModel;
 import dev.vality.cm.model.PartyModificationModel;
 import dev.vality.cm.model.contract.ContractModificationModel;
 import dev.vality.cm.model.contractor.ContractorModificationModel;
@@ -30,6 +31,8 @@ public class PartyModificationToPartyModificationModelConverter
                     .convert(partyModification.getContractorModification(), ContractorModificationModel.class);
             case WALLET_MODIFICATION -> conversionService
                     .convert(partyModification.getWalletModification(), WalletModificationModel.class);
+            case ADDITIONAL_INFO_MODIFICATION -> conversionService
+                    .convert(partyModification.getAdditionalInfoModification(), AdditionalInfoModificationModel.class);
             default -> throw new IllegalArgumentException(
                     String.format("Unknown type '%s'", partyModification.getSetField()));
         };

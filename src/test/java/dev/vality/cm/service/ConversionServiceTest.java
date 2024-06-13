@@ -1,6 +1,7 @@
 package dev.vality.cm.service;
 
 import dev.vality.cm.config.ConverterConfig;
+import dev.vality.cm.model.AdditionalInfoModificationModel;
 import dev.vality.cm.model.ClaimModel;
 import dev.vality.cm.model.ClaimModificationModel;
 import dev.vality.cm.model.PartyModificationModel;
@@ -186,6 +187,20 @@ public class ConversionServiceTest {
                 conversionService.convert(
                         conversionService.convert(contractorModification, ContractorModificationModel.class),
                         ContractorModification.class
+                )
+        );
+    }
+
+    @Test
+    @Repeat(10)
+    public void testAdditionalInfoModificationConverters() {
+        AdditionalInfoModificationUnit additionalInfoModification =
+                MockUtil.generateTBase(AdditionalInfoModificationUnit.class);
+        assertEquals(
+                additionalInfoModification,
+                conversionService.convert(
+                        conversionService.convert(additionalInfoModification, AdditionalInfoModificationUnit.class),
+                        AdditionalInfoModificationUnit.class
                 )
         );
     }
