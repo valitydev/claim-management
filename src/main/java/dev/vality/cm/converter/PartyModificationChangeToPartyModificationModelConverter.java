@@ -1,5 +1,6 @@
 package dev.vality.cm.converter;
 
+import dev.vality.cm.model.AdditionalInfoModificationModel;
 import dev.vality.cm.model.PartyModificationModel;
 import dev.vality.cm.model.contract.ContractModificationModel;
 import dev.vality.cm.model.contractor.ContractorModificationModel;
@@ -30,6 +31,9 @@ public class PartyModificationChangeToPartyModificationModelConverter
             case CONTRACTOR_MODIFICATION:
                 return conversionService.convert(partyModificationChange.getContractorModification(),
                         ContractorModificationModel.class);
+            case ADDITIONAL_INFO_MODIFICATION:
+                return conversionService.convert(partyModificationChange.getAdditionalInfoModification(),
+                        AdditionalInfoModificationModel.class);
             default:
                 throw new IllegalArgumentException(
                         String.format("Unknown type '%s'", partyModificationChange.getSetField()));
