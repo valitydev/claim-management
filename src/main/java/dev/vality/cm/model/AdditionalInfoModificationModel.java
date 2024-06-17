@@ -17,10 +17,11 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@TypeDefs({@TypeDef(
-        name = "string-array",
-        typeClass = StringArrayType.class
-)})
+@TypeDefs({
+        @TypeDef(
+                name = "string-array",
+                typeClass = StringArrayType.class
+        )})
 public class AdditionalInfoModificationModel extends PartyModificationModel {
 
     @Id
