@@ -1,0 +1,1 @@
+ALTER TABLE cm.additional_info_modification_model ALTER COLUMN manager_contact_emails TYPE text;

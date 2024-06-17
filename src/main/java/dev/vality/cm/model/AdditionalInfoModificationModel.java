@@ -17,11 +17,6 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@TypeDefs({
-        @TypeDef(
-                name = "string-array",
-                typeClass = StringArrayType.class
-        )})
 public class AdditionalInfoModificationModel extends PartyModificationModel {
 
     @Id
@@ -31,9 +26,8 @@ public class AdditionalInfoModificationModel extends PartyModificationModel {
     @Column
     private String partyName;
 
-    @Column(columnDefinition = "text[]")
-    @Type(type = "string-array")
-    private String[] managerContactEmails;
+    @Column
+    private String managerContactEmails;
 
     @Column
     private String comment;
