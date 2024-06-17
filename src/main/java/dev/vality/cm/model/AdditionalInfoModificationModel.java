@@ -1,11 +1,14 @@
 package dev.vality.cm.model;
 
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
 import dev.vality.damsel.claim_management.AdditionalInfoModificationUnit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +20,10 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
+@TypeDefs({@TypeDef(
+                name = "string-array",
+                typeClass = StringArrayType.class
+)})
 public class AdditionalInfoModificationModel extends PartyModificationModel {
 
     @Id
@@ -27,8 +34,8 @@ public class AdditionalInfoModificationModel extends PartyModificationModel {
     private String partyName;
 
     @Column(columnDefinition = "text[]")
-    @Type(type = "com.thorben.janssen.PostgreSqlStringArrayType")
-    private List<String> managerContactEmails;
+    @Type( type = "string-array")
+    private String[] managerContactEmails;
 
     @Column
     private String comment;
