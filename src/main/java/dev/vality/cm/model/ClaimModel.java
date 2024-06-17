@@ -6,7 +6,6 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;

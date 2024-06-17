@@ -1,7 +1,6 @@
 package dev.vality.cm.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vality.damsel.claim_management.InvalidChangesetReason;
 import dev.vality.geck.serializer.kit.json.JsonHandler;
 import dev.vality.geck.serializer.kit.json.JsonProcessor;
 import dev.vality.geck.serializer.kit.tbase.TBaseHandler;

@@ -11,7 +11,6 @@ import dev.vality.cm.util.ContextUtil;
 import dev.vality.cm.util.JsonUtil;
 import dev.vality.damsel.claim_management.Claim;
 import dev.vality.damsel.claim_management.ClaimCommitterSrv;
-import dev.vality.damsel.claim_management.Event;
 import dev.vality.damsel.claim_management.InvalidChangeset;
 import dev.vality.woody.api.flow.WFlow;
 import dev.vality.woody.thrift.impl.http.THSpawnClientBuilder;

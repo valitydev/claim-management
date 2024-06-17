@@ -1,7 +1,9 @@
 package dev.vality.cm.converter.wallet;
 
 import dev.vality.cm.converter.ClaimConverter;
-import dev.vality.cm.model.wallet.*;
+import dev.vality.cm.model.wallet.WalletAccountCreationModificationModel;
+import dev.vality.cm.model.wallet.WalletCreationModificationModel;
+import dev.vality.cm.model.wallet.WalletModificationModel;
 import dev.vality.damsel.claim_management.WalletModification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

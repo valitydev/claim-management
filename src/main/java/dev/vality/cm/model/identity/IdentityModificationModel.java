@@ -1,7 +1,6 @@
 package dev.vality.cm.model.identity;
 
 import dev.vality.cm.model.ModificationModel;
-import dev.vality.cm.model.newwallet.NewWalletModificationModel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

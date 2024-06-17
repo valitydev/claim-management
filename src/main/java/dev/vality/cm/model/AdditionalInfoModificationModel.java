@@ -1,13 +1,9 @@
 package dev.vality.cm.model;
 
-import com.vladmihalcea.hibernate.type.array.StringArrayType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 
