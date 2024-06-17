@@ -2,7 +2,6 @@ package dev.vality.cm.converter;
 
 import dev.vality.cm.model.*;
 import dev.vality.damsel.domain.PayoutToolInfo;
-import dev.vality.cm.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
