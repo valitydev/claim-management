@@ -15,7 +15,9 @@ public class AdditionalInfoModificationUnitToAdditionalInfoModificationModelConv
         additionalInfoModificationModel.setComment(additionalInfoModificationModel.getComment());
         additionalInfoModificationModel.setPartyName(additionalInfoModificationModel.getPartyName());
         additionalInfoModificationModel.setManagerContactEmails(
-                additionalInfoModificationUnit.getManagerContactEmails());
+                additionalInfoModificationUnit.getManagerContactEmails() != null
+                        ? (String[]) additionalInfoModificationUnit.getManagerContactEmails().toArray()
+                        : null);
         return additionalInfoModificationModel;
     }
 }
