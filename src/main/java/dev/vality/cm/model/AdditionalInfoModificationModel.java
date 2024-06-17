@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -20,6 +17,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class AdditionalInfoModificationModel extends PartyModificationModel {
+
+    @Id
+    @GeneratedValue
+    private long id;
 
     @Column
     private String partyName;
