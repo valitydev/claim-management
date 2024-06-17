@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,7 +26,8 @@ public class AdditionalInfoModificationModel extends PartyModificationModel {
     @Column
     private String partyName;
 
-    @Column
+    @Column(columnDefinition = "text[]")
+    @Type(type = "com.thorben.janssen.PostgreSqlStringArrayType")
     private List<String> managerContactEmails;
 
     @Column
