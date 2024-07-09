@@ -12,8 +12,8 @@ public class AdditionalInfoModificationUnitToAdditionalInfoModificationModelConv
     @Override
     public AdditionalInfoModificationModel convert(AdditionalInfoModificationUnit additionalInfoModificationUnit) {
         AdditionalInfoModificationModel additionalInfoModificationModel = new AdditionalInfoModificationModel();
-        additionalInfoModificationModel.setComment(additionalInfoModificationModel.getComment());
-        additionalInfoModificationModel.setPartyName(additionalInfoModificationModel.getPartyName());
+        additionalInfoModificationModel.setComment(additionalInfoModificationUnit.getComment());
+        additionalInfoModificationModel.setPartyName(additionalInfoModificationUnit.getPartyName());
         additionalInfoModificationModel.setManagerContactEmails(
                 additionalInfoModificationUnit.getManagerContactEmails() != null
                         ? String.join(", ", additionalInfoModificationUnit.getManagerContactEmails())

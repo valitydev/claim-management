@@ -10,6 +10,13 @@ public class ContactInfoModelToContactInfoConverter implements ClaimConverter<Co
     public ContactInfo convert(ContactInfoModel contactInfoModel) {
         return new ContactInfo()
                 .setEmail(contactInfoModel.getEmail())
-                .setPhoneNumber(contactInfoModel.getPhoneNumber());
+                .setPhoneNumber(contactInfoModel.getPhoneNumber())
+                .setFirstName(contactInfoModel.getFirstName())
+                .setLastName(contactInfoModel.getLastName())
+                .setAddress(contactInfoModel.getAddress())
+                .setCountry(contactInfoModel.getCountry())
+                .setCity(contactInfoModel.getCity())
+                .setPostalCode(contactInfoModel.getPostalCode())
+                .setState(contactInfoModel.getState());
     }
 }
