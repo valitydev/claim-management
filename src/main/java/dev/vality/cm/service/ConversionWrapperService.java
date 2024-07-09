@@ -24,7 +24,7 @@ public class ConversionWrapperService {
 
     public List<ModificationModel> convertModifications(List<Modification> changeset) {
         return changeset.stream()
-                .filter(modification -> filterUnusedModification(modification))
+                .filter(ConversionWrapperService::filterUnusedModification) // TODO
                 .map(change -> conversionService.convert(change, ModificationModel.class))
                 .toList();
     }

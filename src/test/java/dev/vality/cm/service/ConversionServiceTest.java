@@ -129,7 +129,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testShopModificationConverters() {
         ShopModification shopModification = MockUtil.generateTBase(ShopModification.class);
-        if (isUnusedModification(shopModification)) { // TODO ?
+        if (isUnusedModification(shopModification)) { // TODO
             assertEquals(
                     shopModification,
                     conversionService.convert(
@@ -185,7 +185,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testContractorModificationConverters() {
         ContractorModification contractorModification = MockUtil.generateTBase(ContractorModification.class);
-        if (isUnusedModification(contractorModification)) { // TODO ?
+        if (isUnusedModification(contractorModification)) { // TODO
             assertEquals(
                     contractorModification,
                     conversionService.convert(
@@ -214,7 +214,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testPartyModificationConverters() {
         PartyModification partyModification = MockUtil.generateTBase(PartyModification.class);
-        if (isUnusedModification(partyModification)) {
+        if (isUnusedModification(partyModification)) { // TODO
             assertEquals(
                     partyModification,
                     conversionService.convert(
