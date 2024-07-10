@@ -17,11 +17,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static dev.vality.cm.model.ClaimStatusEnum.accepted;
 import static dev.vality.cm.model.ClaimStatusEnum.pending;
@@ -61,7 +61,7 @@ public class ClaimCommitterServiceTest extends AbstractWithCommittersIntegration
                 )
                 .build(ClaimManagementSrv.Iface.class);
 
-        Mockito.when(kafkaTemplate.send(any(), any(), any())).thenReturn(new AsyncResult<>(null));
+        Mockito.when(kafkaTemplate.send(any(), any(), any())).thenReturn(CompletableFuture.supplyAsync(() -> null));
     }
 
     @Test

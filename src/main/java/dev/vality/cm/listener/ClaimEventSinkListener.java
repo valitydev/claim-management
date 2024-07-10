@@ -18,7 +18,7 @@ public class ClaimEventSinkListener {
     @KafkaListener(topics = "${kafka.topics.claim-event-sink.id}", containerFactory = "kafkaListenerContainerFactory")
     public void handle(
             Event event,
-            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) int offsets,
             Acknowledgment ack
     ) {
