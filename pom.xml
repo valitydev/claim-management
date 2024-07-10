@@ -166,7 +166,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>11.0.6</version>
+            <version>11.0.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -178,7 +178,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-http</artifactId>
-            <version>11.0.6</version>
+            <version>11.0.16</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-xml</artifactId>
-            <version>11.0.6</version>
+            <version>11.0.16</version>
             <scope>test</scope>
         </dependency>
         <dependency>
