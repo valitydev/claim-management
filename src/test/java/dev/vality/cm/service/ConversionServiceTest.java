@@ -28,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -145,7 +144,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testContractModificationConverters() {
         ContractModification contractModification = MockUtil.generateTBase(ContractModification.class);
-        if(!FilterUtils.isUnusedModification(contractModification)) {
+        if (!FilterUtils.isUnusedModification(contractModification)) {
             assertEquals(
                     contractModification,
                     conversionService.convert(
@@ -245,7 +244,8 @@ public class ConversionServiceTest {
                     mod.setRemovedAt(null);
                 })
                 .toList();
-        List<ModificationUnit> filterModificationUnits = modificationUnits.stream() // TODO remove after add new modification
+        List<ModificationUnit> filterModificationUnits = modificationUnits.stream()
+                // TODO remove after add new modification
                 .filter(modificationUnit -> !FilterUtils.isUnusedModification(modificationUnit))
                 .toList();
         claim.setChangeset(filterModificationUnits);

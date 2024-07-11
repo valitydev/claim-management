@@ -18,12 +18,12 @@ public class FilterUtils { // TODO remove after add new modifications
                 && contractModification.getPayoutToolModification().isSetModification()
                 && contractModification.getPayoutToolModification().getModification().isSetCreation()
                 && contractModification.getPayoutToolModification().getModification().getCreation().isSetToolInfo()
-                && contractModification.getPayoutToolModification().getModification().getCreation().getToolInfo().isSetDummyAccount();
+                && contractModification.getPayoutToolModification().getModification().getCreation().getToolInfo()
+                .isSetDummyAccount();
     }
 
     public static boolean isUnusedModification(ModificationUnit modificationUnit) {
-        Modification modification = modificationUnit.getModification();
-        return modification.isSetPartyModification() && isUnusedModification(modification.getPartyModification());
+        return isUnusedModification(modificationUnit.getModification());
     }
 
     public static boolean isUnusedModification(Modification modification) {
@@ -31,22 +31,14 @@ public class FilterUtils { // TODO remove after add new modifications
     }
 
     public static boolean isUnusedModification(PartyModification partyModification) {
-        return (partyModification.isSetShopModification()
-                && partyModification.getShopModification().isSetModification()
-                && partyModification.getShopModification().getModification().isSetTurnoverLimitsModification())
+        return (
+                partyModification.isSetShopModification()
+                        && isUnusedModification(partyModification.getShopModification().getModification()))
                 ||
                 (partyModification.isSetContractorModification()
-                        && partyModification.getContractorModification().isSetModification()
-                        && partyModification.getContractorModification().getModification().isSetCreation()
-                        && partyModification.getContractorModification().getModification().getCreation()
-                        .isSetDummyEntity())
-                || (partyModification.isSetContractModification()
-                && partyModification.getContractModification().isSetModification()
-                && partyModification.getContractModification().getModification().isSetPayoutToolModification()
-                && partyModification.getContractModification().getModification().getPayoutToolModification().isSetModification()
-                && partyModification.getContractModification().getModification().getPayoutToolModification().getModification().isSetCreation()
-                && partyModification.getContractModification().getModification().getPayoutToolModification().getModification().getCreation().isSetToolInfo()
-                && partyModification.getContractModification().getModification().getPayoutToolModification().getModification().getCreation().getToolInfo().isSetDummyAccount()
-        );
+                        && isUnusedModification(partyModification.getContractorModification().getModification()))
+                ||
+                (partyModification.isSetContractModification()
+                        && isUnusedModification(partyModification.getContractModification().getModification()));
     }
 }
