@@ -13,7 +13,6 @@ public class ShopContractModificationToShopContractModificationModelConverter
     public ShopContractModificationModel convert(ShopContractModification shopContractModification) {
         ShopContractModificationModel shopContractModificationModel = new ShopContractModificationModel();
         shopContractModificationModel.setContractId(shopContractModification.getContractId());
-        shopContractModificationModel.setPayoutToolId(shopContractModification.getPayoutToolId());
         return shopContractModificationModel;
     }
 

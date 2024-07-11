@@ -2,8 +2,8 @@ package dev.vality.cm.model;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -30,9 +30,5 @@ public class ShopParamsModel {
     @NotNull
     @Column(nullable = false)
     private String contractId;
-
-    @NotNull
-    @Column(nullable = false)
-    private String payoutToolId;
 
 }

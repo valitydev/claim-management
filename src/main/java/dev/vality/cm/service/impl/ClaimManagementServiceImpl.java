@@ -32,12 +32,13 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -470,7 +471,7 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
                     try {
                         log.info("Trying to send Event to kafka, partyId={}, event={}", partyId, event);
 
-                        ListenableFuture<SendResult<String, TBase>> future =
+                        CompletableFuture<SendResult<String, TBase>> future =
                                 kafkaTemplate.send(eventSinkTopic, partyId, event);
 
                         future.get();

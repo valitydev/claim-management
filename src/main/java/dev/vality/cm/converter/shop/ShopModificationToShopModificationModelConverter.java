@@ -33,12 +33,6 @@ public class ShopModificationToShopModificationModelConverter
             case LOCATION_MODIFICATION:
                 return conversionService
                         .convert(shopModification.getLocationModification(), ShopLocationModificationModel.class);
-            case PAYOUT_TOOL_MODIFICATION:
-                return conversionService
-                        .convert(shopModification.getPayoutToolModification(), ShopPayoutToolModificationModel.class);
-            case PAYOUT_SCHEDULE_MODIFICATION:
-                return conversionService.convert(shopModification.getPayoutScheduleModification(),
-                        ShopPayoutScheduleModificationModel.class);
             case SHOP_ACCOUNT_CREATION:
                 return conversionService
                         .convert(shopModification.getShopAccountCreation(), ShopAccountCreationModificationModel.class);

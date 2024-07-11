@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +61,7 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
                 )
                 .build(ClaimManagementSrv.Iface.class);
 
-        Mockito.when(kafkaTemplate.send(any(), any(), any())).thenReturn(new AsyncResult<>(null));
+        Mockito.when(kafkaTemplate.send(any(), any(), any())).thenReturn(CompletableFuture.supplyAsync(() -> null));
     }
 
     @Test
@@ -427,7 +428,6 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
         ShopLocation shopLocation = new ShopLocation();
         shopLocation.setUrl("testUrl");
         shopParams.setLocation(shopLocation);
-        shopParams.setPayoutToolId("testPayoutToolId");
 
         return shopParams;
     }
