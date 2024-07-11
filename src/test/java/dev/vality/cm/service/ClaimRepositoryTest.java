@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionSystemException;
 
-import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
+import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +25,9 @@ public class ClaimRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     private ClaimRepository claimRepository;
+
+    @Autowired
+    private ModificationRepository modificationRepository;
 
     @Test(expected = ConstraintViolationException.class)
     public void testRequireNullSave() throws Throwable {

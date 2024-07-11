@@ -1,5 +1,8 @@
 package dev.vality.cm.util;
 
+import dev.vality.damsel.claim_management.Modification;
+import dev.vality.damsel.claim_management.PartyModification;
+import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.geck.serializer.kit.mock.FieldHandler;
 import dev.vality.geck.serializer.kit.mock.MockMode;
 import dev.vality.geck.serializer.kit.mock.MockTBaseProcessor;
