@@ -12,7 +12,8 @@ public class ShopContractModificationModelToShopContractModificationConverter
     @Override
     public ShopContractModification convert(ShopContractModificationModel shopContractModificationModel) {
         return new ShopContractModification()
-                .setContractId(shopContractModificationModel.getContractId());
+                .setContractId(shopContractModificationModel.getContractId())
+                .setPayoutToolId(shopContractModificationModel.getPayoutToolId());
     }
 
 }

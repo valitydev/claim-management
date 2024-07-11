@@ -5,6 +5,13 @@ management:
     flag: false
   server:
     port: ${management.port}
+  metrics:
+    export:
+      statsd:
+        flavor: etsy
+        enabled: false
+      prometheus:
+        enabled: false
   endpoint:
     health:
       show-details: ALWAYS
@@ -42,8 +49,6 @@ spring:
       #              action: create
       #              create-target: create.sql
       hibernate:
-        id:
-          db_structure_naming_strategy: legacy
         default_schema: cm
         format_sql: false
         temp:
@@ -51,9 +56,9 @@ spring:
         jdbc:
           time_zone: UTC
           lob:
-#            non_contextual_creation: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+            non_contextual_creation: true
     #      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
   kafka:
     bootstrap-servers: "localhost:29092"
     consumer:

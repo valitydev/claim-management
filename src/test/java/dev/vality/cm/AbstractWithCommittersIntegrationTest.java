@@ -4,15 +4,18 @@ import dev.vality.damsel.claim_management.Claim;
 import dev.vality.damsel.claim_management.ClaimCommitterSrv;
 import dev.vality.damsel.claim_management.InvalidChangeset;
 import dev.vality.woody.thrift.impl.http.THServiceBuilder;
-import jakarta.servlet.Servlet;
 import org.apache.thrift.TException;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.test.context.TestPropertySource;
+
+import javax.servlet.Servlet;
+
+import java.util.List;
 
 @TestPropertySource(properties = {
         "claim-management.committers[0].id=committer",
@@ -23,13 +26,13 @@ public abstract class AbstractWithCommittersIntegrationTest extends AbstractInte
 
     protected Server server;
     protected int serverPort = 8032;
-    private ContextHandlerCollection handlerCollection;
+    private HandlerCollection handlerCollection;
 
     @Before
     public void startJetty() throws Exception {
 
         server = new Server(serverPort);
-        ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
+        HandlerCollection contextHandlerCollection = new HandlerCollection(true);
         this.handlerCollection = contextHandlerCollection;
         server.setHandler(contextHandlerCollection);
 

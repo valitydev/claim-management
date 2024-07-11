@@ -8,8 +8,8 @@ import dev.vality.damsel.claim_management.ClaimManagementSrv;
 import dev.vality.woody.thrift.impl.http.THServiceBuilder;
 import lombok.RequiredArgsConstructor;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 

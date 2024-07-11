@@ -40,7 +40,7 @@ public class ClaimModelToClaimConverter implements ClaimConverter<ClaimModel, Cl
                         claimModel.getModifications().stream()
                                 .map(modificationModel -> conversionService
                                         .convert(modificationModel, ModificationUnit.class))
-                                .toList()
+                                .collect(Collectors.toList())
                 ).setMetadata(
                         Optional.ofNullable(claimModel.getMetadata())
                                 .filter(metadataModels -> !metadataModels.isEmpty())

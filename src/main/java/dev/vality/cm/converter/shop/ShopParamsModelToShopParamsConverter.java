@@ -22,6 +22,7 @@ public class ShopParamsModelToShopParamsConverter implements ClaimConverter<Shop
     public ShopParams convert(ShopParamsModel shopParamsModel) {
         return new ShopParams()
                 .setContractId(shopParamsModel.getContractId())
+                .setPayoutToolId(shopParamsModel.getPayoutToolId())
                 .setCategory(new CategoryRef(shopParamsModel.getCategoryId()))
                 .setDetails(conversionService.convert(shopParamsModel.getDetails(), ShopDetails.class))
                 .setLocation(conversionService.convert(shopParamsModel.getLocation(), ShopLocation.class));

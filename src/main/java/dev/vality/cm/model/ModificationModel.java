@@ -6,8 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Where;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 

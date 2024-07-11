@@ -2,8 +2,8 @@ package dev.vality.cm.model;
 
 import lombok.Data;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
