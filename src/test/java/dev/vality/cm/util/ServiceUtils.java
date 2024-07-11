@@ -9,6 +9,7 @@ import dev.vality.damsel.claim_management.ClaimManagementSrv;
 import dev.vality.damsel.claim_management.Modification;
 import dev.vality.woody.api.flow.WFlow;
 import lombok.SneakyThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -49,14 +50,18 @@ public class ServiceUtils {
                                                            Supplier<List<Modification>> supplier) {
         boolean flag = true;
 
-        List<Modification> modification = new ArrayList<>();
+        List<Modification> modifications = new ArrayList<>();
 
         while (flag) {
             flag = false;
 
-            modification = supplier.get();
+            modifications = supplier.get();
 
-            List<ModificationModel> modificationModels = conversionWrapperService.convertModifications(modification);
+            modifications = modifications.stream() // TODO remove after add new modification
+                    .filter(modification -> !FilterUtils.isUnusedModification(modification))
+                    .toList();
+
+            List<ModificationModel> modificationModels = conversionWrapperService.convertModifications(modifications);
 
             for (int i = 0; i < modificationModels.size() - 1; i++) {
                 for (int j = i + 1; j < modificationModels.size(); j++) {
@@ -67,7 +72,7 @@ public class ServiceUtils {
             }
         }
 
-        return modification;
+        return modifications;
     }
 
     public static <T> T callService(Callable<T> callable) {

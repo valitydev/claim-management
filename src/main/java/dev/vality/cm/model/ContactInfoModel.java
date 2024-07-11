@@ -18,4 +18,18 @@ public class ContactInfoModel {
 
     private String email;
 
+    private String  firstName;
+
+    private String lastName;
+
+    private String country;
+
+    private String state;
+
+    private String city;
+
+    private String address;
+
+    private String postalCode;
+
 }

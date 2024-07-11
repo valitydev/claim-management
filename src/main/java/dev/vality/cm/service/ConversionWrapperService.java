@@ -15,7 +15,6 @@ import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,13 +25,13 @@ public class ConversionWrapperService {
     public List<ModificationModel> convertModifications(List<Modification> changeset) {
         return changeset.stream()
                 .map(change -> conversionService.convert(change, ModificationModel.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Modification> convertModificationModels(List<ModificationModel> modifications) {
         return modifications.stream()
                 .map(modification -> conversionService.convert(modification, Modification.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Claim convertClaim(ClaimModel claimModel) {
