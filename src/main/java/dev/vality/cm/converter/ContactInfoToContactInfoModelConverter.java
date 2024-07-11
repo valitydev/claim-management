@@ -11,6 +11,13 @@ public class ContactInfoToContactInfoModelConverter implements ClaimConverter<Co
         ContactInfoModel contactInfoModel = new ContactInfoModel();
         contactInfoModel.setEmail(contactInfo.getEmail());
         contactInfoModel.setPhoneNumber(contactInfo.getPhoneNumber());
+        contactInfoModel.setFirstName(contactInfo.getFirstName());
+        contactInfoModel.setLastName(contactInfo.getLastName());
+        contactInfoModel.setAddress(contactInfo.getAddress());
+        contactInfoModel.setCountry(contactInfo.getCountry());
+        contactInfoModel.setCity(contactInfo.getCity());
+        contactInfoModel.setPostalCode(contactInfo.getPostalCode());
+        contactInfoModel.setState(contactInfo.getState());
         return contactInfoModel;
     }
 }
