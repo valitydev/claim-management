@@ -24,24 +24,8 @@ public class ConversionWrapperService {
 
     public List<ModificationModel> convertModifications(List<Modification> changeset) {
         return changeset.stream()
-                .filter(ConversionWrapperService::filterUnusedModification) // TODO
                 .map(change -> conversionService.convert(change, ModificationModel.class))
                 .toList();
-    }
-
-    private static boolean filterUnusedModification(Modification modification) {
-        return !(modification.isSetPartyModification()
-                && modification.getPartyModification().isSetContractorModification()
-                && modification.getPartyModification().getContractorModification().isSetModification()
-                && modification.getPartyModification().getContractorModification().getModification().isSetCreation()
-                && modification.getPartyModification().getContractorModification().getModification().getCreation()
-                .isSetDummyEntity())
-                &&
-                !(modification.isSetPartyModification()
-                        && modification.getPartyModification().isSetShopModification()
-                        && modification.getPartyModification().getShopModification().isSetModification()
-                        && modification.getPartyModification().getShopModification().getModification()
-                        .isSetTurnoverLimitsModification());
     }
 
     public List<Modification> convertModificationModels(List<ModificationModel> modifications) {

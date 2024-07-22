@@ -18,8 +18,7 @@ public class AdditionalInfoModificationModelToAdditionalInfoModificationUnitConv
         additionalInfoModificationUnit.setPartyName(source.getPartyName());
         additionalInfoModificationUnit.setManagerContactEmails(
                 source.getManagerContactEmails() != null
-                        ? Arrays.stream(source.getManagerContactEmails().split(","))
-                        .map(String::trim)
+                        ? Arrays.stream(source.getManagerContactEmails().split(", "))
                         .toList()
                         : null);
         return additionalInfoModificationUnit;
