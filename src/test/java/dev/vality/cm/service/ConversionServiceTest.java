@@ -12,6 +12,7 @@ import dev.vality.cm.model.external.info.ExternalInfoModificationModel;
 import dev.vality.cm.model.file.FileModificationModel;
 import dev.vality.cm.model.shop.ShopModificationModel;
 import dev.vality.cm.model.status.StatusModificationModel;
+import dev.vality.cm.util.FilterUtils;
 import dev.vality.cm.util.MockUtil;
 import dev.vality.damsel.claim_management.*;
 import dev.vality.geck.common.util.TypeUtil;
@@ -129,7 +130,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testShopModificationConverters() {
         ShopModification shopModification = MockUtil.generateTBase(ShopModification.class);
-        if (isUnusedModification(shopModification)) { // TODO
+        if (!FilterUtils.isUnusedModification(shopModification)) { // TODO remove after aa new modification
             assertEquals(
                     shopModification,
                     conversionService.convert(
@@ -185,7 +186,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testContractorModificationConverters() {
         ContractorModification contractorModification = MockUtil.generateTBase(ContractorModification.class);
-        if (isUnusedModification(contractorModification)) { // TODO
+        if (!FilterUtils.isUnusedModification(contractorModification)) { // TODO remove after aa new modification
             assertEquals(
                     contractorModification,
                     conversionService.convert(
@@ -214,7 +215,7 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testPartyModificationConverters() {
         PartyModification partyModification = MockUtil.generateTBase(PartyModification.class);
-        if (isUnusedModification(partyModification)) { // TODO
+        if (!FilterUtils.isUnusedModification(partyModification)) { // TODO remove after aa new modification
             assertEquals(
                     partyModification,
                     conversionService.convert(
@@ -245,8 +246,12 @@ public class ConversionServiceTest {
                     mod.setChangedAt(TypeUtil.temporalToString(Instant.now().truncatedTo(ChronoUnit.MICROS)));
                     mod.setRemovedAt(null);
                 })
-                .collect(Collectors.toList());
-        claim.setChangeset(modificationUnits);
+                .toList();
+        List<ModificationUnit> filterModificationUnits = modificationUnits.stream()
+                // TODO remove after add new modification
+                .filter(modificationUnit -> !FilterUtils.isUnusedModification(modificationUnit))
+                .toList();
+        claim.setChangeset(filterModificationUnits);
         assertEquals(
                 claim,
                 conversionService.convert(
@@ -255,20 +260,4 @@ public class ConversionServiceTest {
                 )
         );
     }
-
-    private static boolean isUnusedModification(ShopModification shopModification) {
-        return !shopModification.isSetTurnoverLimitsModification();
-    }
-
-    private static boolean isUnusedModification(ContractorModification contractorModification) {
-        return !(contractorModification.isSetCreation()
-                && contractorModification.getCreation().isSetDummyEntity());
-    }
-
-    private static boolean isUnusedModification(PartyModification partyModification) {
-        return !(partyModification.isSetShopModification()
-                && partyModification.getShopModification().isSetModification()
-                && partyModification.getShopModification().getModification().isSetTurnoverLimitsModification());
-    }
-
 }
