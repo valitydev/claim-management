@@ -12,9 +12,9 @@ import dev.vality.cm.model.external.info.ExternalInfoModificationModel;
 import dev.vality.cm.model.file.FileModificationModel;
 import dev.vality.cm.model.shop.ShopModificationModel;
 import dev.vality.cm.model.status.StatusModificationModel;
-import dev.vality.cm.util.FilterUtils;
 import dev.vality.cm.util.MockUtil;
 import dev.vality.damsel.claim_management.*;
+import dev.vality.damsel.domain.TurnoverLimit;
 import dev.vality.geck.common.util.TypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +28,10 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ConverterConfig.class, ConversionService.class})
@@ -130,18 +131,18 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testShopModificationConverters() {
         ShopModification shopModification = MockUtil.generateTBase(ShopModification.class);
-        if (!FilterUtils.isUnusedModification(shopModification)) { // TODO remove after add new modification
-            assertEquals(
-                    shopModification,
-                    conversionService.convert(
-                            conversionService.convert(shopModification, ShopModificationModel.class),
-                            ShopModification.class
-                    )
-            );
+        ShopModification actualShopModification = conversionService.convert(
+                conversionService.convert(shopModification, ShopModificationModel.class),
+                ShopModification.class
+        );
+        if (shopModification.isSetTurnoverLimitsModification()) {
+            assertIterableEquals(shopModification.getTurnoverLimitsModification(),
+                    actualShopModification.getTurnoverLimitsModification());
+
+        } else {
+            assertEquals(shopModification, actualShopModification);
         }
     }
-
-
 
     @Test
     @Repeat(10)
@@ -186,15 +187,14 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testContractorModificationConverters() {
         ContractorModification contractorModification = MockUtil.generateTBase(ContractorModification.class);
-        if (!FilterUtils.isUnusedModification(contractorModification)) { // TODO remove after add new modification
-            assertEquals(
-                    contractorModification,
-                    conversionService.convert(
-                            conversionService.convert(contractorModification, ContractorModificationModel.class),
-                            ContractorModification.class
-                    )
-            );
-        }
+        assertEquals(
+                contractorModification,
+                conversionService.convert(
+                        conversionService.convert(contractorModification, ContractorModificationModel.class),
+                        ContractorModification.class
+                )
+        );
+
     }
 
     @Test
@@ -215,17 +215,26 @@ public class ConversionServiceTest {
     @Repeat(10)
     public void testPartyModificationConverters() {
         PartyModification partyModification = MockUtil.generateTBase(PartyModification.class);
-        if (!FilterUtils.isUnusedModification(partyModification)) { // TODO remove after add new modification
-            assertEquals(
-                    partyModification,
-                    conversionService.convert(
-                            conversionService.convert(partyModification, PartyModificationModel.class),
-                            PartyModification.class
-                    )
-            );
+        PartyModification actualPartyModification = conversionService.convert(
+                conversionService.convert(partyModification, PartyModificationModel.class),
+                PartyModification.class
+        );
+        if (partyModification.isSetShopModification()
+                && partyModification.getShopModification().getModification().isSetTurnoverLimitsModification()) {
+            Set<TurnoverLimit> actualTurnoverLimits = partyModification
+                    .getShopModification()
+                    .getModification()
+                    .getTurnoverLimitsModification();
+            Set<TurnoverLimit> expectedTurnoverLimits = partyModification
+                    .getShopModification()
+                    .getModification()
+                    .getTurnoverLimitsModification();
+            assertIterableEquals(expectedTurnoverLimits, actualTurnoverLimits);
+
+        } else {
+            assertEquals(partyModification, actualPartyModification);
         }
     }
-
 
 
     @Test
@@ -248,8 +257,7 @@ public class ConversionServiceTest {
                 })
                 .toList();
         List<ModificationUnit> filterModificationUnits = modificationUnits.stream()
-                // TODO remove after add new modification
-                .filter(modificationUnit -> !FilterUtils.isUnusedModification(modificationUnit))
+                .filter(modificationUnit -> !isTurnoverLimitModification(modificationUnit))
                 .toList();
         claim.setChangeset(filterModificationUnits);
         assertEquals(
@@ -259,5 +267,16 @@ public class ConversionServiceTest {
                         Claim.class
                 )
         );
+    }
+
+    /*
+       Добавил фильтрацию TurnoverLimitModification, потому что со списком limit сложно проводить сравнение.
+       Списки почти всегда в разной последовательности. Данная конвертация проверяется в других тестах выше.
+     */
+    private static boolean isTurnoverLimitModification(ModificationUnit modificationUnit) {
+        return modificationUnit.getModification().isSetPartyModification()
+                && modificationUnit.getModification().getPartyModification().isSetShopModification()
+                && modificationUnit.getModification().getPartyModification().getShopModification().getModification()
+                        .isSetTurnoverLimitsModification();
     }
 }

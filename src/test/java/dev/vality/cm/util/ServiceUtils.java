@@ -56,10 +56,6 @@ public class ServiceUtils {
 
             modifications = supplier.get();
 
-            modifications = modifications.stream() // TODO remove after add new modification
-                    .filter(modification -> !FilterUtils.isUnusedModification(modification))
-                    .toList();
-
             List<ModificationModel> modificationModels = conversionWrapperService.convertModifications(modifications);
 
             for (int i = 0; i < modificationModels.size() - 1; i++) {
