@@ -2,22 +2,23 @@ package dev.vality.cm.service;
 
 import dev.vality.cm.AbstractIntegrationTest;
 import dev.vality.cm.model.*;
-import dev.vality.cm.model.*;
 import dev.vality.cm.model.comment.CommentModificationModel;
 import dev.vality.cm.model.comment.CommentModificationTypeEnum;
 import dev.vality.cm.model.shop.ShopLocationModificationModel;
+import dev.vality.cm.model.shop.TurnoverLimitModificationModel;
+import dev.vality.cm.model.shop.TurnoverLimitsModificationModel;
 import dev.vality.cm.repository.ClaimRepository;
 import dev.vality.cm.repository.ClaimSpecifications;
 import dev.vality.cm.repository.ModificationRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionSystemException;
 
-import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,6 +26,8 @@ public class ClaimRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     private ClaimRepository claimRepository;
+    @Autowired
+    private ModificationRepository modificationRepository;
 
     @Test(expected = ConstraintViolationException.class)
     public void testRequireNullSave() throws Throwable {
@@ -102,4 +105,45 @@ public class ClaimRepositoryTest extends AbstractIntegrationTest {
         assertEquals(2L, claimModels.size());
     }
 
+    @Test
+    public void testSaveClaimWithTurnoverLimits() {
+        ClaimModel claimModel = new ClaimModel();
+        claimModel.setPartyId("party_id");
+        claimModel.setClaimStatus(new ClaimStatusModel(ClaimStatusEnum.pending, null));
+
+        var turnoverLimitsModificationModel = new TurnoverLimitsModificationModel();
+
+        TurnoverLimitModificationModel limitModificationModelFirst = new TurnoverLimitModificationModel();
+        limitModificationModelFirst.setLimitConfigId("1");
+        limitModificationModelFirst.setDomainRevision(4L);
+        limitModificationModelFirst.setAmountUpperBoundary(100L);
+        limitModificationModelFirst.setLimit(turnoverLimitsModificationModel);
+
+        TurnoverLimitModificationModel limitModificationModelSecond = new TurnoverLimitModificationModel();
+        limitModificationModelSecond.setLimitConfigId("2");
+        limitModificationModelSecond.setDomainRevision(8L);
+        limitModificationModelSecond.setAmountUpperBoundary(200L);
+        limitModificationModelSecond.setLimit(turnoverLimitsModificationModel);
+
+        var turnoverLimits = Set.of(limitModificationModelFirst, limitModificationModelSecond);
+
+        UserInfoModel userInfoModel = new UserInfoModel();
+        userInfoModel.setUserId("213");
+        userInfoModel.setEmail("qwe@qwe.qwe");
+        userInfoModel.setUsername("qwe");
+        userInfoModel.setType(UserTypeEnum.external);
+
+        turnoverLimitsModificationModel.setShopId("shopId");
+        turnoverLimitsModificationModel.setLimits(turnoverLimits);
+        turnoverLimitsModificationModel.setUserInfo(userInfoModel);
+
+        claimModel.setModifications(List.of(turnoverLimitsModificationModel));
+
+        claimRepository.save(claimModel);
+
+        List<ModificationModel> modificationModels = modificationRepository.findAll();
+        var models = ((TurnoverLimitsModificationModel) modificationModels.get(0)).getLimits();
+
+        assertEquals(turnoverLimits.size(), models.size());
+    }
 }

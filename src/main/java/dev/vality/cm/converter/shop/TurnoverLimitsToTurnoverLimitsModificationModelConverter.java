@@ -22,11 +22,13 @@ public class TurnoverLimitsToTurnoverLimitsModificationModelConverter implements
 
     @Override
     public TurnoverLimitsModificationModel convert(Set<TurnoverLimit> turnoverLimits) {
-        TurnoverLimitsModificationModel limitsModificationModel = new TurnoverLimitsModificationModel();
         Set<TurnoverLimitModificationModel> limits = turnoverLimits.stream()
                 .map(turnoverLimit -> conversionService.convert(turnoverLimit, TurnoverLimitModificationModel.class))
                 .collect(Collectors.toSet());
-        limitsModificationModel.setLimits(limits);
-        return limitsModificationModel;
+        TurnoverLimitsModificationModel turnoverLimitsModificationModel = new TurnoverLimitsModificationModel();
+        limits.forEach(turnoverLimitModificationModel ->
+                turnoverLimitModificationModel.setLimit(turnoverLimitsModificationModel));
+        turnoverLimitsModificationModel.setLimits(limits);
+        return turnoverLimitsModificationModel;
     }
 }
