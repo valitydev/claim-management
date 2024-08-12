@@ -111,6 +111,12 @@ public class ClaimRepositoryTest extends AbstractIntegrationTest {
         claimModel.setPartyId("party_id");
         claimModel.setClaimStatus(new ClaimStatusModel(ClaimStatusEnum.pending, null));
 
+        UserInfoModel userInfoModel = new UserInfoModel();
+        userInfoModel.setUserId("213");
+        userInfoModel.setEmail("qwe@qwe.qwe");
+        userInfoModel.setUsername("qwe");
+        userInfoModel.setType(UserTypeEnum.external);
+
         var turnoverLimitsModificationModel = new TurnoverLimitsModificationModel();
 
         TurnoverLimitModificationModel limitModificationModelFirst = new TurnoverLimitModificationModel();
@@ -126,12 +132,6 @@ public class ClaimRepositoryTest extends AbstractIntegrationTest {
         limitModificationModelSecond.setLimit(turnoverLimitsModificationModel);
 
         var turnoverLimits = Set.of(limitModificationModelFirst, limitModificationModelSecond);
-
-        UserInfoModel userInfoModel = new UserInfoModel();
-        userInfoModel.setUserId("213");
-        userInfoModel.setEmail("qwe@qwe.qwe");
-        userInfoModel.setUsername("qwe");
-        userInfoModel.setType(UserTypeEnum.external);
 
         turnoverLimitsModificationModel.setShopId("shopId");
         turnoverLimitsModificationModel.setLimits(turnoverLimits);
