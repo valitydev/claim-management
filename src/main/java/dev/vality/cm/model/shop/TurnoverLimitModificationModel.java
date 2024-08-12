@@ -3,6 +3,7 @@ package dev.vality.cm.model.shop;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -22,6 +23,7 @@ public class TurnoverLimitModificationModel {
 
     private Long domainRevision;
 
+    @ToString.Exclude
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "turnover_limits_id", nullable = false)
     private TurnoverLimitsModificationModel limit;

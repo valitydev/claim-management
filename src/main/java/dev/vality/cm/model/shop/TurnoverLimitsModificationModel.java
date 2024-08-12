@@ -16,6 +16,7 @@ import java.util.Set;
 public class TurnoverLimitsModificationModel extends ShopModificationModel {
 
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "limit", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<TurnoverLimitModificationModel> limits;
 
