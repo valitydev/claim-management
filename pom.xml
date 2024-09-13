@@ -44,7 +44,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.642-7ee7835</version>
+            <version>1.645-9d4aa51</version>
         </dependency>
         <dependency>
             <groupId>dev.vality.woody</groupId>
