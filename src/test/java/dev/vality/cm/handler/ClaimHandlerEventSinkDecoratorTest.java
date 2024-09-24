@@ -40,7 +40,7 @@ public class ClaimHandlerEventSinkDecoratorTest extends AbstractKafkaIntegration
                     assertEquals(EMAIL, value.getUserInfo().getEmail());
                     assertEquals(claim.getPartyId(), event.key());
                     assertEquals(claim.getId(), value.getChange().getCreated().getId());
-                    assertEquals(5, value.getChange().getCreated().getChangesetSize());
+                    assertEquals(claim.getChangesetSize(), value.getChange().getCreated().getChangesetSize());
                 });
 
         runService(() -> client.updateClaim(PARTY_ID_2, claim.getId(), 0,

@@ -3,8 +3,8 @@ name: Build Maven Artifact
 on:
   pull_request:
     branches:
-      - '*'
+      - '**'
 
 jobs:
   build:
-    uses: valitydev/java-workflow/.github/workflows/maven-service-build.yml@v2
+    uses: valitydev/java-workflow/.github/workflows/maven-service-build.yml@v3

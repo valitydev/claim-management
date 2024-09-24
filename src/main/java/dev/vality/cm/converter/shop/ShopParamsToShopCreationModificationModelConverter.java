@@ -24,7 +24,6 @@ public class ShopParamsToShopCreationModificationModelConverter
         ShopParamsModel shopParamsModel = new ShopParamsModel();
         shopParamsModel.setCategoryId(shopParams.getCategory().getId());
         shopParamsModel.setContractId(shopParams.getContractId());
-        shopParamsModel.setPayoutToolId(shopParams.getPayoutToolId());
         shopParamsModel.setDetails(conversionService.convert(shopParams.getDetails(), ShopDetailsModel.class));
         shopParamsModel.setLocation(conversionService.convert(shopParams.getLocation(), ShopLocationModel.class));
         ShopCreationModificationModel shopCreationModification = new ShopCreationModificationModel();

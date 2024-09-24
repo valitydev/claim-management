@@ -16,6 +16,7 @@ public class ShopModificationToShopModificationModelConverter
     @Autowired
     private ConversionService conversionService;
 
+
     @Override
     public ShopModificationModel convert(ShopModification shopModification) {
         switch (shopModification.getSetField()) {
@@ -33,18 +34,16 @@ public class ShopModificationToShopModificationModelConverter
             case LOCATION_MODIFICATION:
                 return conversionService
                         .convert(shopModification.getLocationModification(), ShopLocationModificationModel.class);
-            case PAYOUT_TOOL_MODIFICATION:
-                return conversionService
-                        .convert(shopModification.getPayoutToolModification(), ShopPayoutToolModificationModel.class);
-            case PAYOUT_SCHEDULE_MODIFICATION:
-                return conversionService.convert(shopModification.getPayoutScheduleModification(),
-                        ShopPayoutScheduleModificationModel.class);
             case SHOP_ACCOUNT_CREATION:
                 return conversionService
                         .convert(shopModification.getShopAccountCreation(), ShopAccountCreationModificationModel.class);
             case CASH_REGISTER_MODIFICATION_UNIT:
                 return conversionService.convert(shopModification.getCashRegisterModificationUnit(),
                         ShopCashRegisterModificationModel.class);
+            case TURNOVER_LIMITS_MODIFICATION:
+                return conversionService
+                        .convert(shopModification.getTurnoverLimitsModification(),
+                                TurnoverLimitsModificationModel.class);
             default:
                 throw new IllegalArgumentException(String.format("Unknown type '%s'", shopModification.getSetField()));
         }

@@ -9,7 +9,6 @@ import dev.vality.damsel.claim_management.ClaimManagementSrv;
 import dev.vality.damsel.claim_management.Modification;
 import dev.vality.woody.api.flow.WFlow;
 import lombok.SneakyThrows;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -56,10 +55,6 @@ public class ServiceUtils {
             flag = false;
 
             modifications = supplier.get();
-
-            modifications = modifications.stream() // TODO remove after add new modification
-                    .filter(modification -> !FilterUtils.isUnusedModification(modification))
-                    .toList();
 
             List<ModificationModel> modificationModels = conversionWrapperService.convertModifications(modifications);
 

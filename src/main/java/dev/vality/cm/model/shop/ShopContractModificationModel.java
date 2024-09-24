@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Getter
@@ -19,10 +19,6 @@ public class ShopContractModificationModel extends ShopModificationModel {
     @NotNull
     @Column(nullable = false)
     private String contractId;
-
-    @NotNull
-    @Column(nullable = false)
-    private String payoutToolId;
 
     @Override
     public boolean canEqual(final Object that) {

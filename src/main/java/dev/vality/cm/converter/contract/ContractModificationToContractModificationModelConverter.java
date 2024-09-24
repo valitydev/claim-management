@@ -25,9 +25,6 @@ public class ContractModificationToContractModificationModelConverter
             case TERMINATION:
                 return conversionService
                         .convert(contractModification.getTermination(), ContractTerminationModificationModel.class);
-            case PAYOUT_TOOL_MODIFICATION:
-                return conversionService.convert(contractModification.getPayoutToolModification(),
-                        ContractPayoutToolModificationModel.class);
             case ADJUSTMENT_MODIFICATION:
                 return conversionService.convert(contractModification.getAdjustmentModification(),
                         ContractAdjustmentModificationModel.class);
