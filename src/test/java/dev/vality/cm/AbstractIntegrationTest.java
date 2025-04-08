@@ -19,7 +19,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public abstract class AbstractIntegrationTest {
 
     @ClassRule
-    public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:11.4");
+    public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17.4");
     @Value("${local.server.port}")
     protected int port;
 

@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,7 +43,7 @@ public class ClaimCommitterServiceTest extends AbstractWithCommittersIntegration
 
     private ClaimManagementSrv.Iface client;
 
-    @MockBean
+    @MockitoBean
     private KafkaTemplate<String, TBase> kafkaTemplate;
 
     @Before
