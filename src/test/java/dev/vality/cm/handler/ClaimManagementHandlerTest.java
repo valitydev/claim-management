@@ -21,10 +21,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,7 +43,7 @@ public class ClaimManagementHandlerTest extends AbstractIntegrationTest {
 
     private ClaimManagementSrv.Iface client;
 
-    @MockBean
+    @MockitoBean
     private KafkaTemplate<String, TBase> kafkaTemplate;
 
     @Before
