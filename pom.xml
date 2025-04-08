@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>claim-management</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>claim-management</name>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.645-9d4aa51</version>
+            <version>1.652-ecf4977</version>
         </dependency>
         <dependency>
             <groupId>dev.vality.woody</groupId>
